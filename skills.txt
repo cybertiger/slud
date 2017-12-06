@@ -1,0 +1,32 @@
+Combat:
+	Attack
+	Melee
+	Defence
+	Armoury
+	Double Wielding
+Weapons:
+	Knife
+	Blade
+	Blunt
+	Projectile
+	Two Handed
+	Polearm
+	Staff
+	Whip
+	Thrown
+Magic:
+	Healing
+	Faith
+	Magic Attack
+	Magic Defence
+	Conjuring
+	Woodcraft
+Other:
+	Bargaining
+	Stealing
+	Murder
+	Skullduggery
+	Chi
+	Stealth
+	Riding
+	Application
