@@ -1,18 +1,30 @@
 package org.cyberiantiger.slud.net;
 
+import dagger.Lazy;
 import lombok.AllArgsConstructor;
 
+import javax.inject.Inject;
 import java.nio.ByteBuffer;
 
 import static org.cyberiantiger.slud.net.TelnetOption.*;
 
-@AllArgsConstructor
 public class GaOptionHandler implements TelnetCodec.OptionHandler {
-    TelnetCodec codec;
+
+    private final Lazy<TelnetSocketChannelHandler> handler;
+
+    @Inject
+    public GaOptionHandler(Lazy<TelnetSocketChannelHandler> handler) {
+        this.handler = handler;
+    }
+
+    @Override
+    public byte getOption() {
+        return TOPT_SUPP;
+    }
 
     @Override
     public void handleConnect() {
-        codec.getChannelHandler().getWriteBuffer().put(new byte[] { IAC, DONT, TOPT_SUPP});
+        handler.get().getWriteBuffer().put(new byte[] { IAC, DONT, TOPT_SUPP});
     }
 
     @Override

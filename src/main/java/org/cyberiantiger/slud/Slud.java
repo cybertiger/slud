@@ -1,12 +1,16 @@
 package org.cyberiantiger.slud;
 
-import org.cyberiantiger.slud.net.Backend;
-import org.cyberiantiger.slud.net.TelnetSocketChannelHandler;
+import org.cyberiantiger.slud.net.Network;
+import org.cyberiantiger.slud.ui.Ui;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.io.IOException;
-import java.net.InetSocketAddress;
+import javax.swing.*;
+import java.util.Arrays;
+import java.util.List;
+import java.util.function.Consumer;
+
+import static java.util.Collections.singletonList;
 
 /**
  * Slud entry point.
@@ -18,46 +22,50 @@ public class Slud implements Runnable {
         new Slud().run();
     }
 
+    private SludComponent main;
+    private Network network;
+    private Ui ui;
+
     @Override
     public void run() {
-        SludComponent main = DaggerSludComponent.create();
-        Backend backend = main.getBackend();
-        backend.start();
-        try {
-            TelnetSocketChannelHandler handler = new TelnetSocketChannelHandler();
-            backend.addTask(() -> {
-                try {
-                    backend.register(handler);
-                    handler.getChannel().connect(new InetSocketAddress("elephant.org", 23));
-                } catch (IOException ex) {
-                    ex.printStackTrace();
-                }
-            });
-            new Thread(() -> {
-                try {
-                    while (handler.getChannel().isOpen()) {
-                        byte[] data = new byte[2048];
-                        int len = System.in.read(data, 0, data.length);
-                        if (len < 0) {
-                            return;
-                        }
-                        backend.addTask(() -> {
-                            handler.getWriteBuffer().put(data, 0, len);
-                        });
-                    }
-                    backend.addTask(() -> {
-                        try {
-                            backend.close();
-                        } catch (IOException ex) {
-                            ex.printStackTrace();
-                        }
-                    });
-                } catch (IOException ex) {
-                    ex.printStackTrace();
-                }
-            }).start();
-        } catch (IOException ex) {
-            ex.printStackTrace();
+        main = DaggerSludComponent.builder()
+                .sludModule(new SludModule(this))
+                .build();
+        this.ui = main.getUi();
+        this.network = main.getNetwork();
+    }
+
+    public void runInNetwork(Consumer<Network> task) {
+        runInNetwork(singletonList(task));
+    }
+
+    public void runInNetwork(List<Consumer<Network>> tasks) {
+        if (Thread.currentThread() == main.getBackend()) {
+            Network network = main.getNetwork();
+            for (Consumer<Network> task : tasks) {
+                task.accept(network);
+            }
+        } else {
+            @SuppressWarnings("unchecked")
+            List<Consumer<Network>> tasksCopy = Arrays.asList(tasks.toArray(new Consumer[tasks.size()]));
+            main.getBackend().addTask(() -> runInNetwork(tasksCopy));
+        }
+    }
+
+    public void runInUi(Consumer<Ui> task) {
+        runInUi(singletonList(task));
+    }
+
+    public void runInUi(List<Consumer<Ui>> tasks) {
+        if (SwingUtilities.isEventDispatchThread()) {
+            Ui ui = main.getUi();
+            for (Consumer<Ui> task : tasks) {
+                task.accept(ui);
+            }
+        } else {
+            @SuppressWarnings("unchecked")
+            List<Consumer<Ui>> tasksCopy = Arrays.asList(tasks.toArray(new Consumer[tasks.size()]));
+            SwingUtilities.invokeLater(() -> runInUi(tasksCopy));
         }
     }
 }

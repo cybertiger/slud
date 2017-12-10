@@ -18,9 +18,11 @@ public class SocketChannelHandler {
     @Getter
     private final ByteBuffer writeBuffer;
 
-    public SocketChannelHandler(int readBufferSize, int writeBufferSize) throws IOException {
-        this.channel = SocketChannel.open();
-        this.channel.configureBlocking(false);
+    public SocketChannelHandler(SocketChannel channel, int readBufferSize, int writeBufferSize) {
+        if (channel.isBlocking()) {
+            throw new IllegalArgumentException("Expected non blocking channel");
+        }
+        this.channel = channel;
         readBuffer = ByteBuffer.allocate(readBufferSize);
         readBuffer.limit(0);
         writeBuffer = ByteBuffer.allocate(writeBufferSize);
@@ -63,5 +65,6 @@ public class SocketChannelHandler {
     }
 
     public void handleClose() throws IOException {
+        // TODO.
     }
 }

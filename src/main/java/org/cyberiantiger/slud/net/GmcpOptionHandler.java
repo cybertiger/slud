@@ -1,8 +1,10 @@
 package org.cyberiantiger.slud.net;
 
+import dagger.Lazy;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import javax.inject.Inject;
 import java.nio.ByteBuffer;
 import java.nio.charset.CharacterCodingException;
 import java.nio.charset.CharsetDecoder;
@@ -13,15 +15,21 @@ import static org.cyberiantiger.slud.net.TelnetOption.*;
 public class GmcpOptionHandler implements TelnetCodec.OptionHandler {
     private CharsetDecoder decoder = StandardCharsets.UTF_8.newDecoder();
     private static final Logger log = LoggerFactory.getLogger(GmcpOptionHandler.class);
-    private TelnetCodec codec;
+    private Lazy<TelnetSocketChannelHandler> handler;
 
-    public GmcpOptionHandler(TelnetCodec codec) {
-        this.codec = codec;
+    @Inject
+    public GmcpOptionHandler(Lazy<TelnetSocketChannelHandler> handler) {
+        this.handler = handler;
+    }
+
+    @Override
+    public byte getOption() {
+        return TOPT_GMCP;
     }
 
     @Override
     public void handleConnect() {
-        codec.getChannelHandler().getWriteBuffer().put(new byte[] { IAC, WILL, TOPT_GMCP, IAC, DO, TOPT_GMCP });
+        handler.get().getWriteBuffer().put(new byte[] { IAC, WILL, TOPT_GMCP, IAC, DO, TOPT_GMCP });
     }
 
     @Override

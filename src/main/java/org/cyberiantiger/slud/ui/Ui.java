@@ -1,6 +1,12 @@
 package org.cyberiantiger.slud.ui;
 
-public interface Console {
+public interface Ui {
+    enum ConnectionStatus {
+        DISCONNECTED,
+        CONNECTING,
+        CONNECTED;
+    }
+
     enum ConsoleColor {
         BLACK,
         RED,
@@ -9,7 +15,7 @@ public interface Console {
         CYAN,
         BLUE,
         MAGENTA,
-        WHITE;
+        WHITE
     }
 
     /**
@@ -99,4 +105,9 @@ public interface Console {
      * Beep.
      */
     void beep();
+
+    /**
+     * Set connection status.
+     */
+    void setConnectionStatus(ConnectionStatus status);
 }
