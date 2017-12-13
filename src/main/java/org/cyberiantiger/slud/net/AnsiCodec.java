@@ -1,5 +1,7 @@
 package org.cyberiantiger.slud.net;
 
+import com.googlecode.lanterna.TextColor;
+import dagger.Lazy;
 import org.cyberiantiger.slud.Slud;
 import org.cyberiantiger.slud.ui.Ui;
 import org.slf4j.Logger;
@@ -15,12 +17,12 @@ import static org.cyberiantiger.slud.net.AnsiCodec.AnsiState.*;
 
 public class AnsiCodec {
     private static final Logger log = LoggerFactory.getLogger(AnsiCodec.class);
-    private StringBuilder charOut = new StringBuilder();
-    private StringBuilder sgrNumber = new StringBuilder();
-    private List<Integer> sgrCommands = new ArrayList<>();
-    private List<Consumer<Ui>> actions = new ArrayList<>();
+    private final StringBuilder charOut = new StringBuilder();
+    private final StringBuilder sgrNumber = new StringBuilder();
+    private final List<Integer> sgrCommands = new ArrayList<>();
+    private final Slud main;
+    private final Lazy<TelnetSocketChannelHandler> handler;
     private AnsiState state = NORMAL;
-    private Slud main;
 
     public enum AnsiState {
         NORMAL,
@@ -29,8 +31,13 @@ public class AnsiCodec {
     }
 
     @Inject
-    public AnsiCodec(Slud main) {
+    public AnsiCodec(Slud main, Lazy<TelnetSocketChannelHandler> handler) {
         this.main = main;
+        this.handler = handler;
+    }
+
+    private void addAction(Consumer<Ui> action) {
+        handler.get().addUiAction(action);
     }
 
     public void handleRead(CharBuffer data) {
@@ -38,13 +45,6 @@ public class AnsiCodec {
             handleRead(data.get());
         }
         flushCharacters();
-        flushActions();
-    }
-
-    private void flushActions() {
-        // Pass actions to UI thread.
-        main.runInUi(actions);
-        actions.clear();
     }
 
     private void handleRead(char ch) {
@@ -53,18 +53,18 @@ public class AnsiCodec {
                 switch (ch) {
                     case '\r': // carriage return
                         flushCharacters();
-                        actions.add((ui) -> ui.setX(0));
+                        addAction(Ui::carriageReturn);
                         break;
                     case '\n': // new line
                         flushCharacters();
-                        actions.add((ui) -> ui.moveY(1));
+                        addAction(Ui::newLine);
                         break;
                     case '\007': // bell
-                        actions.add(Ui::beep);
+                        addAction(Ui::beep);
                         break;
                     case '\014': // clear screen
                         flushCharacters();
-                        actions.add(Ui::clear);
+                        addAction(Ui::clear);
                         break;
                     case '\033': // ANSI escape
                         flushCharacters();
@@ -80,7 +80,7 @@ public class AnsiCodec {
                         state = AFTER_LEFT_ANGLE;
                         break;
                     case 'c': // Ui reset.
-                        actions.add(Ui::reset);
+                        addAction(Ui::reset);
                         state = NORMAL;
                         break;
                     default:
@@ -104,7 +104,7 @@ public class AnsiCodec {
                             break;
                         case 'J':
                             // TODO: sgrCommands should hold a number which modifies the clear screen action.
-                            actions.add(Ui::clear);
+                            addAction(Ui::clear);
                             sgrCommands.clear();
                             state = NORMAL;
                             break;
@@ -125,31 +125,31 @@ public class AnsiCodec {
         for (int i : sgrCommands) {
             switch (i) {
                 case 0:
-                    actions.add(Ui::resetAttributes);
+                    addAction(Ui::resetAttributes);
                     break;
                 case 1:
-                    actions.add(ui -> ui.setBold(true));
+                    addAction(ui -> ui.setBold(true));
                     break;
                 case 3:
-                    actions.add(ui -> ui.setItalic(true));
+                    addAction(ui -> ui.setItalic(true));
                     break;
                 case 4:
-                    actions.add(ui -> ui.setUnderline(true));
+                    addAction(ui -> ui.setUnderline(true));
                     break;
                 case 5:
-                    actions.add(ui -> ui.setFlash(true));
+                    addAction(ui -> ui.setFlash(true));
                     break;
                 case 7:
-                    actions.add(Ui::reverse);
+                    addAction(Ui::reverse);
                     break;
                 case 22:
-                    actions.add(ui -> ui.setBold(false));
+                    addAction(ui -> ui.setBold(false));
                     break;
                 case 23:
-                    actions.add(ui -> ui.setItalic(false));
+                    addAction(ui -> ui.setItalic(false));
                     break;
                 case 24:
-                    actions.add(ui -> ui.setUnderline(false));
+                    addAction(ui -> ui.setUnderline(false));
                     break;
                 case 30:
                 case 31:
@@ -159,8 +159,8 @@ public class AnsiCodec {
                 case 35:
                 case 36:
                 case 37:
-                    Ui.ConsoleColor fgColor = Ui.ConsoleColor.values()[i - 30];
-                    actions.add(ui -> ui.setForeground(fgColor));
+                    TextColor fgColor = TextColor.ANSI.values()[i - 30];
+                    addAction(ui -> ui.setForeground(fgColor));
                     break;
                 case 40:
                 case 41:
@@ -170,8 +170,8 @@ public class AnsiCodec {
                 case 45:
                 case 46:
                 case 47:
-                    Ui.ConsoleColor bgColor = Ui.ConsoleColor.values()[i - 40];
-                    actions.add(ui -> ui.setBackground(bgColor));
+                    TextColor bgColor = TextColor.ANSI.values()[i - 40];
+                    addAction(ui -> ui.setBackground(bgColor));
                     break;
                 default:
                     log.warn("Unhandled SGR in ANSI command: {}", i);
@@ -198,6 +198,6 @@ public class AnsiCodec {
         }
         String data = charOut.toString();
         charOut.setLength(0);
-        actions.add(ui -> ui.write(data));
+        addAction(ui -> ui.write(data));
     }
 }

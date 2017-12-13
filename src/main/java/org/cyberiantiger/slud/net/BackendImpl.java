@@ -27,7 +27,7 @@ public class BackendImpl extends Thread implements Backend {
 
     @Inject
     public BackendImpl(Selector sel) {
-        log.info("Creating new BackendImpl {}" + hashCode());
+        log.info("Creating new BackendImpl {}", hashCode());
         this.sel = sel;
     }
 

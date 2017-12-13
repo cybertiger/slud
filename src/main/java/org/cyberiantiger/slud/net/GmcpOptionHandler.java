@@ -29,12 +29,13 @@ public class GmcpOptionHandler implements TelnetCodec.OptionHandler {
 
     @Override
     public void handleConnect() {
-        handler.get().getWriteBuffer().put(new byte[] { IAC, WILL, TOPT_GMCP, IAC, DO, TOPT_GMCP });
+        handler.get().getWriteBuffer().put(new byte[] { IAC, DO, TOPT_GMCP });
     }
 
     @Override
     public void handleDo() {
         log.info("GMCP do");
+        handler.get().getWriteBuffer().put(new byte[] { IAC, WILL, TOPT_GMCP });
     }
 
     @Override

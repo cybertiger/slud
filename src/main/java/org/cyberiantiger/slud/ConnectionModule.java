@@ -9,6 +9,8 @@ import javax.inject.Named;
 import java.io.IOException;
 import java.io.UncheckedIOException;
 import java.net.InetSocketAddress;
+import java.net.SocketOptions;
+import java.net.StandardSocketOptions;
 import java.nio.channels.SocketChannel;
 
 @Module
@@ -60,6 +62,7 @@ public class ConnectionModule {
         try {
             SocketChannel result = SocketChannel.open();
             result.configureBlocking(false);
+            result.setOption(StandardSocketOptions.TCP_NODELAY, true);
             return result;
         } catch (IOException ex) {
             throw new UncheckedIOException(ex);
@@ -69,9 +72,13 @@ public class ConnectionModule {
 
     @Provides
     @ConnectionScope
-    public TelnetSocketChannelHandler makeConnection(Backend backend, SocketChannel connection, TelnetCodec telnetCodec) {
+    public TelnetSocketChannelHandler makeConnection(
+            Backend backend,
+            SocketChannel connection,
+            TelnetCodec telnetCodec,
+            Slud main) {
         try {
-            TelnetSocketChannelHandler handler = new TelnetSocketChannelHandler(connection, telnetCodec);
+            TelnetSocketChannelHandler handler = new TelnetSocketChannelHandler(connection, telnetCodec, main);
             backend.register(handler);
             handler.getChannel().connect(new InetSocketAddress(host, port));
             return handler;
@@ -92,5 +99,12 @@ public class ConnectionModule {
     @ConnectionScope
     public TelnetCodec.OptionHandler getGmcpOptionHandler(GmcpOptionHandler gmcpOptionHandler) {
         return gmcpOptionHandler;
+    }
+
+    @Provides
+    @IntoSet
+    @ConnectionScope
+    public TelnetCodec.OptionHandler getEchoOptionHandler(EchoOptionHandler echoOptionHandler) {
+        return echoOptionHandler;
     }
 }

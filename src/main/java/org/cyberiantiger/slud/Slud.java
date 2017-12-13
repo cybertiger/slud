@@ -62,6 +62,7 @@ public class Slud implements Runnable {
             for (Consumer<Ui> task : tasks) {
                 task.accept(ui);
             }
+            ui.flush();
         } else {
             @SuppressWarnings("unchecked")
             List<Consumer<Ui>> tasksCopy = Arrays.asList(tasks.toArray(new Consumer[tasks.size()]));

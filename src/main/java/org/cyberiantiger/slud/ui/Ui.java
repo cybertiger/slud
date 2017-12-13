@@ -1,21 +1,12 @@
 package org.cyberiantiger.slud.ui;
 
+import com.googlecode.lanterna.TextColor;
+
 public interface Ui {
     enum ConnectionStatus {
         DISCONNECTED,
         CONNECTING,
         CONNECTED;
-    }
-
-    enum ConsoleColor {
-        BLACK,
-        RED,
-        YELLOW,
-        GREEN,
-        CYAN,
-        BLUE,
-        MAGENTA,
-        WHITE
     }
 
     /**
@@ -24,26 +15,14 @@ public interface Ui {
     void clear();
 
     /**
-     * Set x position of cursor relative to left hand size (0 based).
-     * @param x
+     * New line.
      */
-    void setX(int x);
+    void newLine();
 
     /**
-     * Move x position of cursor relative to current position.
+     * Carriage return.
      */
-    void moveX(int x);
-
-    /**
-     * Set y position of cursor relative to top (0 based).
-     * @param y
-     */
-    void setY(int y);
-
-    /**
-     * Move y position of cursor relative to current position.
-     */
-    void moveY(int y);
+    void carriageReturn();
 
     /**
      * Write a string to the console.
@@ -60,13 +39,13 @@ public interface Ui {
      * Set foreground color.
      * @param color
      */
-    void setForeground(ConsoleColor color);
+    void setForeground(TextColor color);
 
     /**
      * Set background color.
      * @param color
      */
-    void setBackground(ConsoleColor color);
+    void setBackground(TextColor color);
 
     /**
      * Set bold text attribute.
@@ -105,6 +84,22 @@ public interface Ui {
      * Beep.
      */
     void beep();
+
+    /**
+     * Flush output to screen.
+     */
+    void flush();
+
+    /**
+     * Toggle local echo.
+     * @param echo Whether to echo locally or not.
+     */
+    void setLocalEcho(boolean echo);
+
+    /**
+     * Echo locally entered text.
+     */
+    void localEcho(String text);
 
     /**
      * Set connection status.
