@@ -21,6 +21,7 @@ Magic:
 	Magic Defence
 	Conjuring
 	Woodcraft
+	Insight
 Other:
 	Bargaining
 	Stealing
