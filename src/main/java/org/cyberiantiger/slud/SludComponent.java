@@ -2,8 +2,9 @@ package org.cyberiantiger.slud;
 
 import dagger.Component;
 import org.cyberiantiger.slud.net.Backend;
+import org.cyberiantiger.slud.net.ConnectionComponent;
+import org.cyberiantiger.slud.net.ConnectionModule;
 import org.cyberiantiger.slud.net.Network;
-import org.cyberiantiger.slud.ui.SludUi;
 import org.cyberiantiger.slud.ui.Ui;
 
 import javax.inject.Singleton;

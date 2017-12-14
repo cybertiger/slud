@@ -9,7 +9,6 @@ import org.slf4j.LoggerFactory;
 import javax.inject.Inject;
 import java.io.IOException;
 import java.io.UncheckedIOException;
-import java.nio.channels.ClosedChannelException;
 import java.nio.channels.SelectionKey;
 import java.nio.channels.Selector;
 import java.util.PriorityQueue;
@@ -95,22 +94,29 @@ public class BackendImpl extends Thread implements Backend {
                     int ops = key.readyOps();
                     SocketChannelHandler handler = (SocketChannelHandler) key.attachment();
                     int interestOps = handler.interestOps();
+                    boolean keepOpen = true;
                     try {
                         if ((ops & interestOps & OP_ACCEPT) != 0) {
-                            handler.handleAccept();
+                            keepOpen &= handler.handleAccept();
                         }
                         if ((ops & interestOps & OP_CONNECT) != 0) {
-                            handler.handleConnect();
+                            keepOpen &= handler.handleConnect();
                         }
                         if ((ops & interestOps & OP_READ) != 0) {
-                            handler.handleRead();
+                            keepOpen &= handler.handleRead();
                         }
-                        if (((ops | interestOps) & OP_WRITE)!= 0) {
-                            handler.handleWrite();
+                        if (((ops | interestOps) & OP_WRITE) != 0) {
+                            keepOpen &= handler.handleWrite();
                         }
                     } catch (IOException | RuntimeException ex) {
-                        log.error("Closing connection", ex);
-                        handler.getChannel().close();
+                        keepOpen = false;
+                    }
+                    try {
+                        if (!keepOpen) {
+                            handler.handleClose(); // Should close socket.
+                        }
+                    } catch (IOException | RuntimeException ex) {
+                        log.error("Exception closing socket", ex);
                     }
                 }
                 wait = processTasks();

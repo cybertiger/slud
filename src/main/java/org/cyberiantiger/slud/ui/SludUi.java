@@ -1,16 +1,22 @@
 package org.cyberiantiger.slud.ui;
 
 import com.googlecode.lanterna.TextColor;
-import com.googlecode.lanterna.terminal.swing.*;
+import com.googlecode.lanterna.terminal.swing.ScrollingSwingTerminal;
+import com.googlecode.lanterna.terminal.swing.SwingTerminalFontConfiguration;
+import com.googlecode.lanterna.terminal.swing.TerminalEmulatorColorConfiguration;
+import com.googlecode.lanterna.terminal.swing.TerminalEmulatorDeviceConfiguration;
 import dagger.Lazy;
 import lombok.Getter;
 import org.cyberiantiger.slud.Slud;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import javax.inject.Inject;
 import javax.swing.*;
 import java.awt.*;
 
 public class SludUi {
+    private static final Logger log = LoggerFactory.getLogger(Logger.class);
     private final Lazy<Ui> ui;
     private final Slud main;
     JFrame mainFrame = new JFrame();
@@ -51,15 +57,18 @@ public class SludUi {
         bottomPanel.setLayout(new BorderLayout());
         bottomPanel.add(inputField, BorderLayout.CENTER);
         bottomPanel.add(connectButton, BorderLayout.EAST);
-        outputField.setFocusable(false);
-        outputField.setPreferredSize(new Dimension(800, 600));
+        // outputField.setFocusable(false);
+        outputField.addResizeListener((terminal, terminalSize) -> {
+            log.info("Setting terminal size to: " + terminalSize);
+            main.runInNetwork(network -> network.setTerminalSize(terminalSize.getRows(), terminalSize.getColumns()));
+        });
         outputField.setFont(new Font(Font.MONOSPACED, Font.PLAIN, 12));
         connectButton.setFocusable(false);
         mainFrame.pack();
         // Actions.
         connectButton.addActionListener((action) -> main.runInNetwork((net) -> {
             // TODO: set width/height appropriately.
-            net.connect("elephant.org", 23, "ANSI", 80, 50);
+            net.connect("elephant.org", 23, "ANSI");
         }));
         inputField.addActionListener(action -> {
             String text = inputField.getText();

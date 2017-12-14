@@ -1,7 +1,9 @@
-package org.cyberiantiger.slud.net;
+package org.cyberiantiger.slud.net.option;
 
 import dagger.Lazy;
 import lombok.AllArgsConstructor;
+import org.cyberiantiger.slud.net.TelnetCodec;
+import org.cyberiantiger.slud.net.TelnetSocketChannelHandler;
 
 import javax.inject.Inject;
 import java.nio.ByteBuffer;

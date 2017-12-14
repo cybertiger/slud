@@ -1,7 +1,6 @@
-package org.cyberiantiger.slud;
+package org.cyberiantiger.slud.net;
 
 import dagger.Subcomponent;
-import org.cyberiantiger.slud.net.Connection;
 
 @ConnectionScope
 @Subcomponent(modules = ConnectionModule.class)

@@ -62,6 +62,11 @@ public class TelnetCodec {
         charOut = CharBuffer.allocate(0x100000);
     }
 
+    @SuppressWarnings("unchecked")
+    public <T extends OptionHandler> T getOptionHandler(byte type) {
+        return (T) handlers[type & 0xff];
+    }
+
     public void handleRead(ByteBuffer input) {
         while (input.hasRemaining()) {
             handleByte(input.get());

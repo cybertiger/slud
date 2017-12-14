@@ -1,6 +1,5 @@
 package org.cyberiantiger.slud.net;
 
-import org.cyberiantiger.slud.ConnectionModule;
 import org.cyberiantiger.slud.SludComponent;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -17,6 +16,8 @@ public class NetworkImpl implements Network {
     private SludComponent mainComponent;
     private Connection currentConnection = null;
     private Backend backend;
+    private int terminalWidth = 80;
+    private int terminalHeight = 24;
 
     @Inject
     public NetworkImpl(SludComponent mainComponent, Backend backend) {
@@ -25,7 +26,7 @@ public class NetworkImpl implements Network {
     }
 
     @Override
-    public void connect(String host, int port, String terminal, int initTermWidth, int initTermHeight) {
+    public void connect(String host, int port, String terminal) {
         if (currentConnection != null) {
             log.info("Disconnecting current connection");
             currentConnection.disconnect();
@@ -33,8 +34,8 @@ public class NetworkImpl implements Network {
         log.info("Creating new connection");
         currentConnection =
                 mainComponent.getConnectionComponent(
-                        new ConnectionModule(host, port, terminal, initTermWidth, initTermHeight
-                        )).getConnection();
+                        new ConnectionModule(host, port, terminal)).getConnection();
+        currentConnection.setTerminalSize(terminalWidth, terminalHeight);
     }
 
     @Override
@@ -55,6 +56,15 @@ public class NetworkImpl implements Network {
     public void sendCommand(String command) {
         if (currentConnection != null) {
             currentConnection.sendCommand(command);
+        }
+    }
+
+    @Override
+    public void setTerminalSize(int terminalWidth, int terminalHeight) {
+        this.terminalWidth = terminalWidth;
+        this.terminalHeight = terminalHeight;
+        if (currentConnection != null) {
+            currentConnection.setTerminalSize(terminalWidth, terminalHeight);
         }
     }
 }

@@ -1,4 +1,4 @@
-package org.cyberiantiger.slud;
+package org.cyberiantiger.slud.net;
 
 import javax.inject.Scope;
 import java.lang.annotation.Retention;

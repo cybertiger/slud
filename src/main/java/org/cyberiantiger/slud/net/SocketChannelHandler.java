@@ -45,26 +45,29 @@ public class SocketChannelHandler {
         }
     }
 
-    public void handleConnect() throws IOException {
-        channel.finishConnect();
+    public boolean handleConnect() throws IOException {
+        return channel.finishConnect();
     }
 
-    public void handleRead() throws IOException {
+    public boolean handleRead() throws IOException {
         readBuffer.compact();
-        channel.read(readBuffer);
+        int readBytes = channel.read(readBuffer);
         readBuffer.flip();
+        return readBytes >= 0;
     }
 
-    public void handleWrite() throws IOException {
+    public boolean handleWrite() throws IOException {
         writeBuffer.flip();
         channel.write(writeBuffer);
         writeBuffer.compact();
+        return true;
     }
 
-    public void handleAccept() throws IOException {
+    public boolean handleAccept() throws IOException {
+        return true;
     }
 
     public void handleClose() throws IOException {
-        // TODO.
+        channel.close();
     }
 }

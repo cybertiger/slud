@@ -1,6 +1,8 @@
-package org.cyberiantiger.slud.net;
+package org.cyberiantiger.slud.net.option;
 
 import dagger.Lazy;
+import org.cyberiantiger.slud.net.TelnetCodec;
+import org.cyberiantiger.slud.net.TelnetSocketChannelHandler;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

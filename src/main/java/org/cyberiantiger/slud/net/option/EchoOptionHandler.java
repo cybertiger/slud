@@ -1,6 +1,8 @@
-package org.cyberiantiger.slud.net;
+package org.cyberiantiger.slud.net.option;
 
 import dagger.Lazy;
+import org.cyberiantiger.slud.net.TelnetCodec;
+import org.cyberiantiger.slud.net.TelnetSocketChannelHandler;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -29,23 +31,19 @@ public class EchoOptionHandler implements TelnetCodec.OptionHandler {
 
     @Override
     public void handleDo() {
-        log.info("DO");
     }
 
     @Override
     public void handleDont() {
-        log.info("DONT");
     }
 
     @Override
     public void handleWill() {
-        log.info("WILL");
         handler.get().addUiAction(ui -> ui.setLocalEcho(false));
     }
 
     @Override
     public void handleWont() {
-        log.info("WONT");
         handler.get().addUiAction(ui -> ui.setLocalEcho(true));
     }
 
