@@ -151,6 +151,6 @@ public class UiImpl implements Ui {
 
     @Override
     public void setConnectionStatus(ConnectionStatus status) {
-        log.info("UiImpl.setConnectionStatus({})", status);
+        ui.setConnectionStatus(status);
     }
 }

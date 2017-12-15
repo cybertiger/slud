@@ -1,6 +1,7 @@
 package org.cyberiantiger.slud.net;
 
 import dagger.Lazy;
+import org.cyberiantiger.slud.net.option.OptionHandler;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -26,16 +27,6 @@ public class TelnetCodec {
     private CharsetDecoder charDecoder = StandardCharsets.UTF_8.newDecoder();
     private TelnetState state = NORMAL;
     private OptionHandler[] handlers = new OptionHandler[256];
-
-    public interface OptionHandler {
-        byte getOption();
-        void handleConnect();
-        void handleDo();
-        void handleDont();
-        void handleWill();
-        void handleWont();
-        void handleSuboption(ByteBuffer data);
-    }
 
     public enum TelnetState {
         NORMAL,

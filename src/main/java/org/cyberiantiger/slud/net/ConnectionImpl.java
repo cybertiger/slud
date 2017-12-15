@@ -35,7 +35,7 @@ public class ConnectionImpl implements Connection {
     @Override
     public void disconnect() {
         try {
-            telnetSocketChannelHandler.getChannel().close();
+            telnetSocketChannelHandler.handleClose();
         } catch (IOException ex) {
             throw new UncheckedIOException(ex);
         }

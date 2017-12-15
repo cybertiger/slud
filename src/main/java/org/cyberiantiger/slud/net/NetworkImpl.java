@@ -43,6 +43,7 @@ public class NetworkImpl implements Network {
         if (currentConnection != null) {
             currentConnection.disconnect();
         }
+        currentConnection = null;
     }
 
     @Override

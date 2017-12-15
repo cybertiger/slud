@@ -75,35 +75,35 @@ public class ConnectionModule {
     @Provides
     @IntoSet
     @ConnectionScope
-    public TelnetCodec.OptionHandler getGaOptionHandler(GaOptionHandler gaOptionHandler) {
-        return gaOptionHandler;
+    public OptionHandler getGaOptionHandler(SuppOptionHandler suppOptionHandler) {
+        return suppOptionHandler;
     }
 
     @Provides
     @IntoSet
     @ConnectionScope
-    public TelnetCodec.OptionHandler getGmcpOptionHandler(GmcpOptionHandler gmcpOptionHandler) {
+    public OptionHandler getGmcpOptionHandler(GmcpOptionHandler gmcpOptionHandler) {
         return gmcpOptionHandler;
     }
 
     @Provides
     @IntoSet
     @ConnectionScope
-    public TelnetCodec.OptionHandler getEchoOptionHandler(EchoOptionHandler echoOptionHandler) {
+    public OptionHandler getEchoOptionHandler(EchoOptionHandler echoOptionHandler) {
         return echoOptionHandler;
     }
 
     @Provides
     @IntoSet
     @ConnectionScope
-    public TelnetCodec.OptionHandler getNawsOptionHandler(NawsOptionHandler nawsOptionHandler) {
+    public OptionHandler getNawsOptionHandler(NawsOptionHandler nawsOptionHandler) {
         return nawsOptionHandler;
     }
 
     @Provides
     @IntoSet
     @ConnectionScope
-    public TelnetCodec.OptionHandler getTermOptionHandler(TermOptionHandler termOptionHandler) {
+    public OptionHandler getTermOptionHandler(TermOptionHandler termOptionHandler) {
         return termOptionHandler;
     }
 }

@@ -1,12 +1,36 @@
 package org.cyberiantiger.slud.ui;
 
 import com.googlecode.lanterna.TextColor;
+import lombok.Getter;
+import org.cyberiantiger.slud.net.Network;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 public interface Ui {
     enum ConnectionStatus {
-        DISCONNECTED,
-        CONNECTING,
-        CONNECTED;
+        DISCONNECTED(SludUi.IconType.DISCONNECTED),
+        CONNECTING(SludUi.IconType.CONNECTING) {
+            public void action(Network net) {
+                net.disconnect();
+            }
+        },
+        CONNECTED(SludUi.IconType.CONNECTED) {
+            public void action(Network net) {
+                net.disconnect();
+            }
+        };
+        private static final Logger log = LoggerFactory.getLogger(Ui.class);
+
+        @Getter
+        private final SludUi.IconType iconType;
+
+        ConnectionStatus(SludUi.IconType iconType) {
+            this.iconType = iconType;
+        }
+
+        public void action(Network net) {
+            net.connect("elephant.org", 23, "ANSI");
+        }
     }
 
     /**
