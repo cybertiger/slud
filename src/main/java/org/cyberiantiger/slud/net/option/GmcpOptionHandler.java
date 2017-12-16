@@ -1,7 +1,5 @@
 package org.cyberiantiger.slud.net.option;
 
-import com.fasterxml.jackson.core.JsonParseException;
-import com.fasterxml.jackson.databind.JsonMappingException;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import dagger.Lazy;
@@ -47,7 +45,9 @@ public class GmcpOptionHandler extends AbstractOptionHandler {
         GmcpTypeHandler<?> handler = GmcpTypeHandlers.INSTANCE.getGmcpTypeHandler(gmcpType);
         try {
             if (handler != null) {
-                handler.handle(mapper.readValue(new ByteBufferInputStream(data), handler.getJavaType()));
+                getHandler().addUiAction(
+                        handler.getHandler(
+                                mapper.readValue(new ByteBufferInputStream(data), handler.getJavaType())));
             } else {
                 log.info("Unhandled GCMP data: {} {}", gmcpType, mapper.readValue(new ByteBufferInputStream(data), JsonNode.class));
             }

@@ -2,6 +2,9 @@ package org.cyberiantiger.slud.model;
 
 import com.fasterxml.jackson.databind.JavaType;
 import com.fasterxml.jackson.databind.type.TypeFactory;
+import org.cyberiantiger.slud.ui.Ui;
+
+import java.util.function.Consumer;
 
 /**
  * Interface for gmcp type handlers.
@@ -24,5 +27,5 @@ public interface GmcpTypeHandler<T> {
      * Handle GMCP data.
      * @param data GMCP data to handle.
      */
-    void handle(T data);
+    Consumer<Ui> getHandler(T data);
 }

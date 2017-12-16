@@ -3,25 +3,30 @@ package org.cyberiantiger.slud.ui;
 import com.googlecode.lanterna.SGR;
 import com.googlecode.lanterna.TextColor;
 import com.googlecode.lanterna.terminal.swing.ScrollingSwingTerminal;
+import org.cyberiantiger.slud.ui.model.Avatar;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import javax.inject.Inject;
+import javax.inject.Singleton;
 
 /**
  * Gather Ui components, and in the darkness bind them.
  */
+@Singleton
 public class UiImpl implements Ui {
     private static final Logger log = LoggerFactory.getLogger(UiImpl.class);
-    private SludUi ui;
-    private ScrollingSwingTerminal output;
+    private final SludUi ui;
+    private final Avatar avatar;
+    private final ScrollingSwingTerminal output;
     private TextColor fg;
     private TextColor bg;
     private boolean echo = true;
 
     @Inject
-    public UiImpl(SludUi ui) {
+    public UiImpl(SludUi ui, Avatar avatar) {
         this.ui = ui;
+        this.avatar = avatar;
         this.output = ui.getOutputField();
         resetColorsInternal();
     }
@@ -152,5 +157,63 @@ public class UiImpl implements Ui {
     @Override
     public void setConnectionStatus(ConnectionStatus status) {
         ui.setConnectionStatus(status);
+    }
+
+    @Override
+    public void gmcpQuit() {
+        avatar.quit();
+    }
+
+    @Override
+    public void gmcpReset() {
+        avatar.reset();
+    }
+
+    @Override
+    public void gmcpHp(int hp) {
+        log.info("Set hp to {}", hp);
+        avatar.getHp().setValue(hp);
+    }
+
+    @Override
+    public void gmcpMaxHp(int maxHp) {
+        log.info("Set max hp to {}", maxHp);
+        avatar.getHp().setMax(maxHp);
+    }
+
+    @Override
+    public void gmcpMp(int mp) {
+        log.info("Set mp to {}", mp);
+        avatar.getMp().setValue(mp);
+    }
+
+    @Override
+    public void gmcpMaxMp(int maxMp) {
+        log.info("Set max mp to {}", maxMp);
+        avatar.getMp().setMax(maxMp);
+    }
+
+    @Override
+    public void gmcpSp(int sp) {
+        log.info("Set sp to {}", sp);
+        avatar.getSp().setValue(sp);
+    }
+
+    @Override
+    public void gmcpMaxSp(int maxSp) {
+        log.info("Set max sp to {}", maxSp);
+        avatar.getSp().setMax(maxSp);
+    }
+
+    @Override
+    public void gmcpXp(long xp) {
+        log.info("Set xp to {}", xp);
+        avatar.getXp().setValue(xp);
+    }
+
+    @Override
+    public void gmcpMaxXp(long maxXp) {
+        log.info("Set max xp to {}", maxXp);
+        avatar.getXp().setMax(maxXp);
     }
 }

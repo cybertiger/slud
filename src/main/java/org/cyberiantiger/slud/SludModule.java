@@ -10,6 +10,7 @@ import org.cyberiantiger.slud.net.NetworkImpl;
 import org.cyberiantiger.slud.ui.SludUi;
 import org.cyberiantiger.slud.ui.Ui;
 import org.cyberiantiger.slud.ui.UiImpl;
+import org.cyberiantiger.slud.ui.model.Avatar;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -64,7 +65,6 @@ public class SludModule {
     }
 
     @Provides
-    @Singleton
     public Ui getUi(UiImpl uiImpl) {
         return uiImpl;
     }

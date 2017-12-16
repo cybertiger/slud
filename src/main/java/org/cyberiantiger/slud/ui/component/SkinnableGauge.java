@@ -9,10 +9,6 @@ import java.awt.event.ActionEvent;
 import java.awt.image.BufferedImage;
 import java.awt.image.RescaleOp;
 
-import static java.lang.Thread.sleep;
-import static javax.swing.WindowConstants.EXIT_ON_CLOSE;
-import static org.cyberiantiger.slud.ui.IconType.*;
-
 
 /**
  * Horrible UI code.
@@ -21,35 +17,43 @@ import static org.cyberiantiger.slud.ui.IconType.*;
  */
 public class SkinnableGauge extends JComponent {
     private static final Logger log = LoggerFactory.getLogger(SkinnableGauge.class);
-    private static final int FPS = 10; // frames per second.
+    private static final int FPS = 25; // frames per second.
     private final ImageIcon baseIcon;
     private final ImageIcon gaugeIcon;
     private final ImageIcon overlayIcon;
     private final RescaleOp gaugeColor;
-    private final RescaleOp positiveChangeColor;
-    private final RescaleOp negativeChangeColor;
+    private final RescaleOp changeColor;
     private final int minPx;
     private final int maxPx;
     private final boolean horizontal;
 
-    private int max;
-    private int value;
-    private float changeValue;
-    private float changeUpdateVelocity;
+    /**
+     * Target for the gauge to eventually show.
+     */
+    private float percentValue = 0f;
+    /**
+     * Value currently showing.
+     */
+    private float delayedValue = 0f;
+    /**
+     * Change to delayed value per animation step.
+     */
+    private float changeVelocity = 0f;
+    /**
+     * Text to render.
+     */
+    private String text = "";
 
     private BufferedImage base;
     private BufferedImage gauge;
     private BufferedImage overlay;
-    private BufferedImage render;
-    private Graphics2D rg;
     private Timer swingTimer = new Timer(1000 / FPS, this::animate);
 
     public SkinnableGauge(ImageIcon base,
                           ImageIcon gauge,
                           ImageIcon overlay,
                           Color gaugeColor,
-                          Color positiveChangeColor,
-                          Color negativeChangeColor,
+                          Color changeColor,
                           int minPx,
                           int maxPx,
                           boolean horizontal) {
@@ -57,121 +61,110 @@ public class SkinnableGauge extends JComponent {
         this.gaugeIcon = gauge;
         this.overlayIcon = overlay;
         this.gaugeColor = rescaleOpFromColor(gaugeColor);
-        this.positiveChangeColor = rescaleOpFromColor(positiveChangeColor);
-        this.negativeChangeColor = rescaleOpFromColor(negativeChangeColor);
+        this.changeColor = rescaleOpFromColor(changeColor);
         this.minPx = minPx;
         this.maxPx = maxPx;
         this.horizontal = horizontal;
-        this.max = 0;
-        this.value = 0;
-        this.changeValue = 0f;
-        this.changeUpdateVelocity = 0f;
         Dimension size = new Dimension(base.getIconWidth(), base.getIconHeight());
         setBackground(Color.BLACK);
         setOpaque(false);
         setPreferredSize(size);
         setMinimumSize(size);
         setMaximumSize(size);
-        swingTimer.start();
+    }
+
+    public void setValue(float percentValue, String text) {
+        if (percentValue < 0f) {
+            percentValue = 0f;
+        } else if (percentValue > 1f) {
+            percentValue = 1f;
+        }
+        this.text = text;
+        this.percentValue = percentValue;
+        changeVelocity = (percentValue - delayedValue) / (FPS * 2);
+        if (!swingTimer.isRunning()) {
+            swingTimer.restart();
+        }
+        repaint();
     }
 
     private void initOffscreen() {
-        if (render == null) {
+        if (base == null) {
             base = toBufferedImage(baseIcon);
             gauge = toBufferedImage(gaugeIcon);
             overlay = toBufferedImage(overlayIcon);
-            render = getGraphicsConfiguration()
-                    .createCompatibleImage(baseIcon.getIconWidth(), baseIcon.getIconHeight(), BufferedImage.TYPE_INT_ARGB);
-            rg = render.createGraphics();
         }
+    }
+
+    private int getValuePx() {
+        return minPx + (int) (percentValue * (maxPx - minPx));
+    }
+
+    private int getDelayedPx() {
+        return minPx + (int) (delayedValue * (maxPx - minPx));
     }
 
     @Override
-    protected void paintComponent(Graphics g) {
-        super.paintComponent(g);
+    protected void paintComponent(Graphics gg) {
+        super.paintComponent(gg);
         initOffscreen();
-        // clear to transparent.
-        rg.setComposite(AlphaComposite.getInstance(AlphaComposite.CLEAR));
-        rg.fillRect(0,0, render.getWidth(), render.getHeight());
+        Graphics2D g = (Graphics2D) gg;
 
-        //reset composite
-        rg.setComposite(AlphaComposite.getInstance(AlphaComposite.SRC_OVER));
-        // Draw base.
-        rg.drawImage(base, 0, 0, null);
+        int delayedPx = getDelayedPx();
+        int valuePx = getValuePx();
 
-        // Draw gauge with color.
-        clip(0, value);
-        rg.drawImage(gauge, gaugeColor, 0, 0);
+        Shape clip = g.getClip(); // Save current clip.
 
-        int changeValue = (int) (this.changeValue < 0 ? Math.ceil(this.changeValue) : Math.floor(this.changeValue));
-        if (Math.abs(changeValue) != 0) {
-            // TODO: set clip rectangle.
-            if (changeValue < 0) {
-                clip(value, value - changeValue);
-                rg.drawImage(gauge, negativeChangeColor, 0, 0);
-            } else {
-                clip(value - changeValue, value);
-                rg.drawImage(gauge, positiveChangeColor, 0, 0);
-            }
+        // Draw base image.
+        g.drawImage(base, 0, 0, null);
+
+        // Render gauge.
+        if (delayedPx == valuePx) {
+            // No change to show.
+            clip(g, minPx, valuePx);
+            g.drawImage(gauge, gaugeColor, 0, 0);
+        } else if (delayedPx < valuePx) {
+            clip(g, minPx, delayedPx);
+            g.drawImage(gauge, gaugeColor, 0, 0);
+            g.setClip(clip);
+            clip(g, delayedPx, valuePx);
+            g.drawImage(gauge, changeColor, 0, 0);
+        } else {
+            clip(g, minPx, valuePx);
+            g.drawImage(gauge, gaugeColor, 0, 0);
+            g.setClip(clip);
+            clip(g, valuePx, delayedPx);
+            g.drawImage(gauge, changeColor, 0, 0);
         }
-        // Reset clip area.
-        rg.setClip(0, 0, render.getWidth(), render.getHeight());
 
-        rg.drawImage(overlay, 0, 0, null);
+        g.setClip(clip);
+        g.drawImage(overlay, 0, 0, null);
 
-        // Render offscreen image.
-        g.drawImage(render, 0, 0, null);
+        FontMetrics metrics = g.getFontMetrics();
+        int x = (base.getWidth() - metrics.stringWidth(text)) / 2;
+        int y = ((base.getHeight() - metrics.getHeight()) / 2) + metrics.getAscent();
+        g.drawString(text, x, y); // TODO: must be inside bounds of our images or it'll corrupt the display.
     }
 
-    private void clip(int min, int max) {
-        double minPercent = this.max <= 0 ? 1d : 1d * min / this.max;
-        double maxPercent = this.max <= 0 ? 1d : 1d * max / this.max;
-        if (maxPercent < 0d) {
-            maxPercent = 0d;
-        } else if (maxPercent > 1d) {
-            maxPercent = 1d;
-        }
-        if (minPercent < 0d) {
-            minPercent = 0d;
-        } else if (minPercent > 1d) {
-            minPercent = 1d;
-        }
-        if (maxPercent < minPercent) {
-            minPercent = maxPercent;
-        }
-        int maxClip = (int) (minPx + (maxPx - minPx) * maxPercent);
-        int minClip = (int) (minPx + (maxPx - minPx) * minPercent);
-
+    private void clip(Graphics2D g, int min, int max) {
         if (horizontal) {
-            rg.setClip(minClip, 0, maxClip - minClip, render.getHeight());
+            g.clipRect(min, 0, max - min, base.getHeight());
         } else {
-            rg.setClip(0, minClip, render.getWidth(), maxClip - minClip);
+            g.clipRect(0, min, base.getWidth(), max - min);
         }
     }
 
     private void animate(ActionEvent event) {
-        float oldValue = changeValue;
-        changeValue -= changeUpdateVelocity;
-        if ( (changeValue <= 0 & oldValue >= 0) ||
-                (changeValue >= 0 & oldValue <= 0)) {
-            changeValue = 0f;
-            changeUpdateVelocity = 0f;
-            swingTimer.stop();
-        }
-        repaint();
-    }
+        float oldValue = delayedValue;
+        delayedValue += changeVelocity;
 
-    public void setMax(int max) {
-        this.max = max;
-        repaint();
-    }
-
-    public void setValue(int value) {
-        this.changeValue += value - this.value;
-        this.changeUpdateVelocity = changeValue / ( FPS * 2 ); /* 2 second animation, conveniently 1 mud tick */
-        this.value = value;
-        if (changeValue != 0f) {
-            swingTimer.restart();
+        if ( (delayedValue <= percentValue & oldValue >= percentValue) ||
+                (delayedValue >= percentValue & oldValue <= percentValue)) {
+            delayedValue = percentValue;
+            changeVelocity = 0f;
+            if (swingTimer.isRunning()) {
+                swingTimer.stop();
+            }
         }
         repaint();
     }
@@ -201,11 +194,9 @@ public class SkinnableGauge extends JComponent {
                 GAUGE_GAUGE.load(),
                 GAUGE_OVERLAY.load(),
                 Color.RED,
-                Color.GREEN,
-                Color.BLUE,
-                8, 292, true);
-        gauge.max = 1000;
-        gauge.value = 500;
+                Color.RED.darker().darker(),
+                8, 248, true);
+        gauge.setForeground(Color.WHITE);
         frame.getRootPane().setLayout(new BorderLayout());
         frame.getRootPane().add(gauge, BorderLayout.CENTER);
         frame.pack();
@@ -215,11 +206,11 @@ public class SkinnableGauge extends JComponent {
 
         while (true) {
             sleep(4000);
-            gauge.setValue(500);
+            gauge.setValue(0.5f, "Hello");
             sleep(4000);
-            gauge.setValue(400);
+            gauge.setValue(0.4f, "World");
             sleep(4000);
-            gauge.setValue(600);
+            gauge.setValue(0.6f, "Test");
         }
     }
     */

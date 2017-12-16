@@ -129,4 +129,54 @@ public interface Ui {
      * Set connection status.
      */
     void setConnectionStatus(ConnectionStatus status);
+
+    /**
+     * gmcpQuit
+     */
+    void gmcpQuit();
+
+    /**
+     * gmcpReset
+     */
+    void gmcpReset();
+
+    /**
+     * gmcpHp
+     */
+    void gmcpHp(int hp);
+
+    /**
+     * gmcpMaxHp
+     */
+    void gmcpMaxHp(int maxHp);
+
+    /**
+     * gmcpMp
+     */
+    void gmcpMp(int mp);
+
+    /**
+     * gmcpMaxMp
+     */
+    void gmcpMaxMp(int maxMp);
+
+    /**
+     * gmcpSp
+     */
+    void gmcpSp(int sp);
+
+    /**
+     * gmcpMaxSp
+     */
+    void gmcpMaxSp(int maxSp);
+
+    /**
+     * gmcpXp
+     */
+    void gmcpXp(long xp);
+
+    /**
+     * gmcpMaxXp
+     */
+    void gmcpMaxXp(long maxXp);
 }
