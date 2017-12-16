@@ -4,6 +4,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.util.Collections;
+import java.util.EnumMap;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -75,15 +76,15 @@ public enum GmcpTypeHandlers {
                 log.info("Char.Vitals.maxexp: {}", data);
             }
         });
-        handlerMap.put("Char.Stats", new GmcpTypeHandler<Map<Stat, Integer>>() {
+        handlerMap.put("Char.Stats", new GmcpTypeHandler<EnumMap<Stat, Integer>>() {
             @Override
-            public void handle(Map<Stat, Integer> data) {
+            public void handle(EnumMap<Stat, Integer> data) {
                 log.info("Char.Stats: {}", data);
             }
         });
-        handlerMap.put("Char.Skills", new GmcpTypeHandler<Map<Skill, Integer>>() {
+        handlerMap.put("Char.Skills", new GmcpTypeHandler<EnumMap<Skill, Integer>>() {
             @Override
-            public void handle(Map<Skill, Integer> data) {
+            public void handle(EnumMap<Skill, Integer> data) {
                 log.info("Char.Skills: {}", data);
             }
         });
@@ -93,9 +94,9 @@ public enum GmcpTypeHandlers {
                 log.info("Char.Status: {}", data);
             }
         });
-        handlerMap.put("Char.Limbs", new GmcpTypeHandler<Map<Limb, LimbStatus>>() {
+        handlerMap.put("Char.Limbs", new GmcpTypeHandler<EnumMap<Limb, LimbStatus>>() {
             @Override
-            public void handle(Map<Limb, LimbStatus> data) {
+            public void handle(EnumMap<Limb, LimbStatus> data) {
                 log.info("Char.Limbs {}", data);
             }
         });
