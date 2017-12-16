@@ -1,4 +1,4 @@
-# Slud Mud Client
+# Slud Client
 
 A Java mudclient written specifically for Elephant MUD.
 
