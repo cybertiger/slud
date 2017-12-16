@@ -1,8 +1,14 @@
 package org.cyberiantiger.slud.net.option;
 
+import com.fasterxml.jackson.core.JsonParseException;
+import com.fasterxml.jackson.databind.JsonMappingException;
+import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import dagger.Lazy;
+import org.cyberiantiger.slud.model.GmcpTypeHandler;
+import org.cyberiantiger.slud.model.GmcpTypeHandlers;
 import org.cyberiantiger.slud.net.TelnetSocketChannelHandler;
+import org.cyberiantiger.slud.util.ByteBufferInputStream;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -11,14 +17,11 @@ import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.UncheckedIOException;
 import java.nio.ByteBuffer;
-import java.nio.charset.CharacterCodingException;
-import java.nio.charset.CharsetDecoder;
 import java.nio.charset.StandardCharsets;
 
-import static org.cyberiantiger.slud.net.TelnetOption.*;
+import static org.cyberiantiger.slud.net.TelnetOption.TOPT_GMCP;
 
 public class GmcpOptionHandler extends AbstractOptionHandler {
-    private CharsetDecoder decoder = StandardCharsets.UTF_8.newDecoder();
     private static final Logger log = LoggerFactory.getLogger(GmcpOptionHandler.class);
     private final ObjectMapper mapper;
 
@@ -30,10 +33,26 @@ public class GmcpOptionHandler extends AbstractOptionHandler {
 
     @Override
     public void handleSuboption(ByteBuffer data) {
+        ByteArrayOutputStream buffer = new ByteArrayOutputStream(40);
+        data.mark();
+        while (data.hasRemaining()) {
+            byte ch = data.get();
+            if (ch == (byte) ' ') {
+                break;
+            }
+            buffer.write(ch);
+        }
+        byte[] gmcpTypeData = buffer.toByteArray();
+        String gmcpType = new String(gmcpTypeData, 0, gmcpTypeData.length);
+        GmcpTypeHandler<?> handler = GmcpTypeHandlers.INSTANCE.getGmcpTypeHandler(gmcpType);
         try {
-            log.info("Got GMCP data: {}", decoder.decode(data));
-        } catch (CharacterCodingException ex) {
-            log.error("Error decoding GMCP data", ex);
+            if (handler != null) {
+                handler.handle(mapper.readValue(new ByteBufferInputStream(data), handler.getJavaType()));
+            } else {
+                log.info("Unhandled GCMP data: {} {}", gmcpType, mapper.readValue(new ByteBufferInputStream(data), JsonNode.class));
+            }
+        } catch (IOException ex) {
+            log.error("Error parsing GMCP data for {}", gmcpType, ex);
         }
     }
 

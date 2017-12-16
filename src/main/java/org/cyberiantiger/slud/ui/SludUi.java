@@ -34,23 +34,6 @@ public class SludUi {
     @Getter
     JButton connectButton;
 
-    public enum IconType {
-        CONNECTED("connected.png"),
-        CONNECTING("connecting.gif"), // Animated.
-        DISCONNECTED("disconnected.png");
-
-        @Getter
-        private String resource;
-
-        IconType(String resource) {
-            this.resource = resource;
-        }
-
-        public ImageIcon load() {
-            return new ImageIcon(SludUi.class.getResource(resource));
-        }
-    }
-
     @Inject
     public SludUi(Slud main, Lazy<Ui> ui) {
         this.main = main;

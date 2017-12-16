@@ -59,6 +59,13 @@
     </build>
 
     <dependencies>
+        <!-- UI skins, will get back to this later...
+        <dependency>
+            <groupId>com.jtattoo</groupId>
+            <artifactId>JTattoo</artifactId>
+            <version>1.6.11</version>
+        </dependency>
+        -->
         <dependency>
             <groupId>com.googlecode.lanterna</groupId>
             <artifactId>lanterna</artifactId>

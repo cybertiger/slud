@@ -8,13 +8,13 @@ import org.slf4j.LoggerFactory;
 
 public interface Ui {
     enum ConnectionStatus {
-        DISCONNECTED(SludUi.IconType.DISCONNECTED),
-        CONNECTING(SludUi.IconType.CONNECTING) {
+        DISCONNECTED(IconType.DISCONNECTED),
+        CONNECTING(IconType.CONNECTING) {
             public void action(Network net) {
                 net.disconnect();
             }
         },
-        CONNECTED(SludUi.IconType.CONNECTED) {
+        CONNECTED(IconType.CONNECTED) {
             public void action(Network net) {
                 net.disconnect();
             }
@@ -22,9 +22,9 @@ public interface Ui {
         private static final Logger log = LoggerFactory.getLogger(Ui.class);
 
         @Getter
-        private final SludUi.IconType iconType;
+        private final IconType iconType;
 
-        ConnectionStatus(SludUi.IconType iconType) {
+        ConnectionStatus(IconType iconType) {
             this.iconType = iconType;
         }
 

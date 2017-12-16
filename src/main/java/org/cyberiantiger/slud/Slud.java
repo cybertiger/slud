@@ -18,7 +18,9 @@ import static java.util.Collections.singletonList;
 public class Slud implements Runnable {
     private static final Logger log = LoggerFactory.getLogger(Slud.class);
 
-    public static void main(String... args) {
+    public static void main(String... args) throws ClassNotFoundException, UnsupportedLookAndFeelException, InstantiationException, IllegalAccessException {
+        // Install UI skin.
+        // UIManager.setLookAndFeel("com.jtattoo.plaf.hifi.HiFiLookAndFeel");
         new Slud().run();
     }
 
