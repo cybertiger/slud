@@ -108,6 +108,7 @@ public class SludUi {
             main.runInNetwork(network -> network.setTerminalSize(terminalSize.getRows(), terminalSize.getColumns()));
         });
         outputField.setFont(new Font(Font.MONOSPACED, Font.PLAIN, 12));
+        outputField.setFocusable(false);
         connectButton.setFocusable(false);
         mainFrame.pack();
         // Actions.
