@@ -7,6 +7,8 @@ import lombok.Getter;
 
 @AllArgsConstructor(access = AccessLevel.PRIVATE)
 public enum ItemType {
+    @JsonProperty("0")
+    NONE("None"), // Abuse the fact that jackson deserializes 0 to the zeroth element in the array.
     @JsonProperty("armour")
     ARMOR("Armour"),
     @JsonProperty("weapon")

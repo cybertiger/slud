@@ -123,6 +123,13 @@ public enum GmcpTypeHandlers {
                 return ui -> {};
             }
         });
+        handlerMap.put("Room.Items.All", new GmcpTypeHandler<List<Map<String, Item>>>() {
+            @Override
+            public Consumer<Ui> getHandler(List<Map<String, Item>> data) {
+                log.info("Room.Items.All: {}", data);
+                return ui -> {};
+            }
+        });
         handlerMap.put("Char.Worn", new GmcpTypeHandler<Map<String, EnumSet<Limb>>>() {
             @Override
             public Consumer<Ui> getHandler(Map<String, EnumSet<Limb>> data) {

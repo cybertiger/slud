@@ -12,6 +12,8 @@ import lombok.AllArgsConstructor;
  */
 @AllArgsConstructor(access = AccessLevel.PRIVATE)
 public enum ItemSubtype {
+    @JsonProperty("0")
+    NONE("None"), // Abuse the fact that jackson deserializes 0 to the zeroth element in the array.
     // Armor types
     @JsonProperty("helmet")
     HELMET("Helmet"),
