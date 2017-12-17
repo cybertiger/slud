@@ -190,7 +190,6 @@ public class TelnetCodec {
     private void handleCommand(byte iacCommand) {
         flushOutput();
         // TODO: Handle IAC commands.
-        log.info("Got IAC " + (iacCommand & 0xff));
     }
 
     private void handleDo(byte data) {

@@ -1,24 +1,30 @@
 package org.cyberiantiger.slud.model;
 
+import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import lombok.Value;
+import org.cyberiantiger.slud.json.IntBooleanConverter;
 
 @Value
 public class LimbStatus {
     int hp;
-    int maxhp;
-    int bandaged;
-    int broken;
-    int severed;
+    // Optional, may not be sent when max hp does not change from previous message.
+    Integer maxhp;
+    @JsonDeserialize(contentConverter = IntBooleanConverter.class)
+    Boolean bandaged;
+    @JsonDeserialize(contentConverter = IntBooleanConverter.class)
+    Boolean broken;
+    @JsonDeserialize(contentConverter = IntBooleanConverter.class)
+    Boolean severed;
 
     public boolean isBandaged() {
-        return bandaged != 0;
+        return bandaged != null && bandaged;
     }
 
     public boolean isBroken() {
-        return broken != 0;
+        return broken != null && broken;
     }
 
     public boolean isSevered() {
-        return severed != 0;
+        return severed != null && severed;
     }
 }

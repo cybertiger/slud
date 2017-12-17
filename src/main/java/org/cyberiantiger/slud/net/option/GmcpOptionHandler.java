@@ -31,6 +31,7 @@ public class GmcpOptionHandler extends AbstractOptionHandler {
 
     @Override
     public void handleSuboption(ByteBuffer data) {
+        ByteBuffer dataCopy = data.slice();
         ByteArrayOutputStream buffer = new ByteArrayOutputStream(40);
         data.mark();
         while (data.hasRemaining()) {
@@ -48,12 +49,20 @@ public class GmcpOptionHandler extends AbstractOptionHandler {
                 getHandler().addUiAction(
                         handler.getHandler(
                                 mapper.readValue(new ByteBufferInputStream(data), handler.getJavaType())));
+                // log.info("Successfully parsed GMCP data: {}", toString(dataCopy));
             } else {
-                log.info("Unhandled GCMP data: {} {}", gmcpType, mapper.readValue(new ByteBufferInputStream(data), JsonNode.class));
+                log.info("Unhandled GCMP data: {}", toString(dataCopy));
             }
         } catch (IOException ex) {
-            log.error("Error parsing GMCP data for {}", gmcpType, ex);
+            log.error("Error parsing GMCP data for {}", toString(dataCopy), ex);
         }
+    }
+
+    private static String toString(ByteBuffer data) {
+        byte[] stringSource = new byte[data.remaining()];
+        int i =0;
+        data.get(stringSource, 0, stringSource.length);
+        return new String(stringSource, StandardCharsets.UTF_8);
     }
 
     @Override

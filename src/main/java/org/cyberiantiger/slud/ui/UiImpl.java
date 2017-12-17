@@ -171,49 +171,41 @@ public class UiImpl implements Ui {
 
     @Override
     public void gmcpHp(int hp) {
-        log.info("Set hp to {}", hp);
         avatar.getHp().setValue(hp);
     }
 
     @Override
     public void gmcpMaxHp(int maxHp) {
-        log.info("Set max hp to {}", maxHp);
         avatar.getHp().setMax(maxHp);
     }
 
     @Override
     public void gmcpMp(int mp) {
-        log.info("Set mp to {}", mp);
         avatar.getMp().setValue(mp);
     }
 
     @Override
     public void gmcpMaxMp(int maxMp) {
-        log.info("Set max mp to {}", maxMp);
         avatar.getMp().setMax(maxMp);
     }
 
     @Override
     public void gmcpSp(int sp) {
-        log.info("Set sp to {}", sp);
         avatar.getSp().setValue(sp);
     }
 
     @Override
     public void gmcpMaxSp(int maxSp) {
-        log.info("Set max sp to {}", maxSp);
         avatar.getSp().setMax(maxSp);
     }
 
     @Override
     public void gmcpXp(long xp) {
-        log.info("Set xp to {}", xp);
         avatar.getXp().setValue(xp);
     }
 
     @Override
     public void gmcpMaxXp(long maxXp) {
-        log.info("Set max xp to {}", maxXp);
         avatar.getXp().setMax(maxXp);
     }
 }

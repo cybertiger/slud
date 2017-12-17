@@ -4,10 +4,7 @@ import org.cyberiantiger.slud.ui.Ui;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.util.Collections;
-import java.util.EnumMap;
-import java.util.HashMap;
-import java.util.Map;
+import java.util.*;
 import java.util.function.Consumer;
 
 public enum GmcpTypeHandlers {
@@ -105,7 +102,42 @@ public enum GmcpTypeHandlers {
                 return ui -> {};
             }
         });
-        this.handlerMap = Collections.unmodifiableMap(handlerMap);
+        handlerMap.put("Char.Items", new GmcpTypeHandler<Map<String, Item>>() {
+            @Override
+            public Consumer<Ui> getHandler(Map<String, Item> data) {
+                log.info("Char.Items: {}", data);
+                return ui -> {};
+            }
+        });
+        handlerMap.put("Char.Items.Bag", new GmcpTypeHandler<Map<String, Map<String, Item>>>() {
+            @Override
+            public Consumer<Ui> getHandler(Map<String, Map<String, Item>> data) {
+                log.info("Char.Items: {}", data);
+                return ui -> {};
+            }
+        });
+        handlerMap.put("Room.Items", new GmcpTypeHandler<Map<String, Item>>() {
+            @Override
+            public Consumer<Ui> getHandler(Map<String, Item> data) {
+                log.info("Room.Items: {}", data);
+                return ui -> {};
+            }
+        });
+        handlerMap.put("Char.Worn", new GmcpTypeHandler<Map<String, EnumSet<Limb>>>() {
+            @Override
+            public Consumer<Ui> getHandler(Map<String, EnumSet<Limb>> data) {
+                log.info("Char.Worn: {}", data);
+                return ui -> {};
+            }
+        });
+        handlerMap.put("Char.Wielded", new GmcpTypeHandler<Map<String, EnumSet<Limb>>>() {
+            @Override
+            public Consumer<Ui> getHandler(Map<String, EnumSet<Limb>> data) {
+                log.info("Char.Wielded: {}", data);
+                return ui -> {};
+            }
+        });
+        this.handlerMap = handlerMap;
     }
 
     public GmcpTypeHandler<?> getGmcpTypeHandler(String gmcpType) {
