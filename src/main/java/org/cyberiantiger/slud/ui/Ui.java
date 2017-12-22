@@ -2,9 +2,13 @@ package org.cyberiantiger.slud.ui;
 
 import com.googlecode.lanterna.TextColor;
 import lombok.Getter;
+import org.cyberiantiger.slud.model.*;
 import org.cyberiantiger.slud.net.Network;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import java.util.EnumMap;
+import java.util.Map;
 
 public interface Ui {
     enum ConnectionStatus {
@@ -178,5 +182,35 @@ public interface Ui {
     /**
      * gmcpMaxXp
      */
-    void gmcpMaxXp(long maxXp);
+    void gmcpMaxXp(long minXp, long maxXp);
+
+    /**
+     * gmcpCharStatus
+     */
+    void gmcpCharStatus(CharStatus status);
+
+    /**
+     * gmcpCharStats
+     */
+    void gmcpCharStats(EnumMap<Stat, Integer> stats);
+
+    /**
+     * gmcpCharSkills
+     */
+    void gmcpCharSkills(EnumMap<Skill, Integer> skills);
+
+    /**
+     * gmcpCharLimbs
+     */
+    void gmcpCharLimbs(EnumMap<Limb, LimbStatus> limbs);
+
+    /**
+     * gmcpPartyMembers
+     */
+    void gmcpPartyMembers(Map<String, PartyMember> members);
+
+    /**
+     * gmcpPartyVitals
+     */
+    void gmcpPartyVitals(Map<String, PartyVitals> vitals);
 }

@@ -3,7 +3,7 @@ package org.cyberiantiger.slud.model;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.Getter;
 
-public enum Guild {
+public enum CharacterClass {
     @JsonProperty("child")
     CHILD("Child"),
     @JsonProperty("fighter")
@@ -26,7 +26,7 @@ public enum Guild {
     @Getter
     private final String displayName;
 
-    Guild(String displayName) {
+    CharacterClass(String displayName) {
         this.displayName = displayName;
     }
 }

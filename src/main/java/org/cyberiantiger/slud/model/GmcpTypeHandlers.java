@@ -69,37 +69,33 @@ public enum GmcpTypeHandlers {
                 return ui -> ui.gmcpMaxSp(data);
             }
         });
-        handlerMap.put("Char.Vitals.maxexp", new GmcpTypeHandler<Long>() {
+        handlerMap.put("Char.Vitals.maxexp", new GmcpTypeHandler<MaxXp>() {
             @Override
-            public Consumer<Ui> getHandler(Long data) {
-                return ui -> ui.gmcpMaxXp(data);
+            public Consumer<Ui> getHandler(MaxXp data) {
+                return ui -> ui.gmcpMaxXp(data.getMin(), data.getMax());
             }
         });
         handlerMap.put("Char.Stats", new GmcpTypeHandler<EnumMap<Stat, Integer>>() {
             @Override
             public Consumer<Ui> getHandler(EnumMap<Stat, Integer> data) {
-                log.info("Char.Stats: {}", data);
-                return ui -> {};
+                return ui -> ui.gmcpCharStats(data);
             }
         });
         handlerMap.put("Char.Skills", new GmcpTypeHandler<EnumMap<Skill, Integer>>() {
             @Override
             public Consumer<Ui> getHandler(EnumMap<Skill, Integer> data) {
-                log.info("Char.Skills: {}", data);
-                return ui -> {};
+                return ui -> ui.gmcpCharSkills(data);
             }
         });
         handlerMap.put("Char.Status", new GmcpTypeHandler<CharStatus>() {
             @Override
             public Consumer<Ui> getHandler(CharStatus data) {
-                log.info("Char.Status: {}", data);
-                return ui -> {};
+                return ui -> ui.gmcpCharStatus(data);
             }
         });
         handlerMap.put("Char.Limbs", new GmcpTypeHandler<EnumMap<Limb, LimbStatus>>() {
             public Consumer<Ui> getHandler(EnumMap<Limb, LimbStatus> data) {
-                log.info("Char.Limbs: {}", data);
-                return ui -> {};
+                return ui -> ui.gmcpCharLimbs(data);
             }
         });
         handlerMap.put("Char.Items", new GmcpTypeHandler<Map<String, Item>>() {
@@ -144,6 +140,44 @@ public enum GmcpTypeHandlers {
                 return ui -> {};
             }
         });
+        handlerMap.put("Char.Hunt", new GmcpTypeHandler<List<String>>() {
+            @Override
+            public Consumer<Ui> getHandler(List<String> data) {
+                log.info("Char.Attackers.Hunt: {}", data);
+                return ui -> {};
+            }
+        });
+        handlerMap.put("Char.Attackers.Attack", new GmcpTypeHandler<List<String>>() {
+            @Override
+            public Consumer<Ui> getHandler(List<String> data) {
+                log.info("Char.Attackers.Attack: {}", data);
+                return ui -> {};
+            }
+        });
+        handlerMap.put("Char.Target.Vitals", new GmcpTypeHandler<TargetVitals>() {
+            @Override
+            public Consumer<Ui> getHandler(TargetVitals data) {
+                log.info("Char.Target.Vitals: {}", data);
+                return ui -> {};
+            }
+        });
+        handlerMap.put("Party.Members", new GmcpTypeHandler<Map<String, PartyMember>>() {
+            @Override
+            public Consumer<Ui> getHandler(Map<String, PartyMember> data) {
+                return ui -> ui.gmcpPartyMembers(data);
+            }
+        });
+        handlerMap.put("Party.Vitals", new GmcpTypeHandler<Map<String, PartyVitals>>() {
+            @Override
+            public Consumer<Ui> getHandler(Map<String, PartyVitals> data) {
+                return ui -> ui.gmcpPartyVitals(data);
+            }
+        });
+        // TODO:
+        // Char.Target (not yet implemented, server side)
+        // Char.Cast (would like to make a list of all castable spells).
+        // Char.Buffs (would like to a make a list of all possible buffs).
+
         this.handlerMap = handlerMap;
     }
 
