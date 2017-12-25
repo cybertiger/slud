@@ -9,6 +9,7 @@ import dagger.Lazy;
 import lombok.Getter;
 import org.cyberiantiger.slud.Slud;
 import org.cyberiantiger.slud.ui.component.SkinnableGauge;
+import org.cyberiantiger.slud.ui.model.Avatar;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -27,6 +28,7 @@ public class SludUi {
     private static final Logger log = LoggerFactory.getLogger(Logger.class);
     private final Lazy<Ui> ui;
     private final Slud main;
+    private final Avatar avatar;
     private final Map<IconType, ImageIcon> icons = new EnumMap<>(IconType.class);
     private Ui.ConnectionStatus status;
     JFrame mainFrame;
@@ -47,9 +49,10 @@ public class SludUi {
     SkinnableGauge xpBar;
 
     @Inject
-    public SludUi(Slud main, Lazy<Ui> ui) {
+    public SludUi(Slud main, Lazy<Ui> ui, Avatar avatar) {
         this.main = main;
         this.ui = ui;
+        this.avatar = avatar;
         TerminalEmulatorDeviceConfiguration termConfig =
                 new TerminalEmulatorDeviceConfiguration(
                         50000, // Scrollback buffer
@@ -115,6 +118,9 @@ public class SludUi {
         inputField.addActionListener(action -> {
             String text = inputField.getText();
             inputField.selectAll();
+            if ("!showavatar".equals(text)) {
+                log.info("Avatar is\n {}", avatar);
+            }
             ui.get().localEcho(text);
             main.runInNetwork(net -> net.sendCommand(text));
         });

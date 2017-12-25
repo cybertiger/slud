@@ -58,16 +58,16 @@ public class Slud implements Runnable {
         runInUi(singletonList(task));
     }
 
-    public void runInUi(List<Consumer<Ui>> tasks) {
+    public void runInUi(List<Consumer<? super Ui>> tasks) {
         if (SwingUtilities.isEventDispatchThread()) {
             Ui ui = main.getUi();
-            for (Consumer<Ui> task : tasks) {
+            for (Consumer<? super Ui> task : tasks) {
                 task.accept(ui);
             }
             ui.flush();
         } else {
             @SuppressWarnings("unchecked")
-            List<Consumer<Ui>> tasksCopy = Arrays.asList(tasks.toArray(new Consumer[tasks.size()]));
+            List<Consumer<? super Ui>> tasksCopy = Arrays.asList(tasks.toArray(new Consumer[tasks.size()]));
             SwingUtilities.invokeLater(() -> runInUi(tasksCopy));
         }
     }

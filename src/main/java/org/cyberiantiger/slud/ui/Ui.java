@@ -7,10 +7,7 @@ import org.cyberiantiger.slud.net.Network;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.util.EnumMap;
-import java.util.Map;
-
-public interface Ui {
+public interface Ui extends GmcpHandler {
     enum ConnectionStatus {
         DISCONNECTED(IconType.DISCONNECTED),
         CONNECTING(IconType.CONNECTING) {
@@ -134,83 +131,4 @@ public interface Ui {
      */
     void setConnectionStatus(ConnectionStatus status);
 
-    /**
-     * gmcpQuit
-     */
-    void gmcpQuit();
-
-    /**
-     * gmcpReset
-     */
-    void gmcpReset();
-
-    /**
-     * gmcpHp
-     */
-    void gmcpHp(int hp);
-
-    /**
-     * gmcpMaxHp
-     */
-    void gmcpMaxHp(int maxHp);
-
-    /**
-     * gmcpMp
-     */
-    void gmcpMp(int mp);
-
-    /**
-     * gmcpMaxMp
-     */
-    void gmcpMaxMp(int maxMp);
-
-    /**
-     * gmcpSp
-     */
-    void gmcpSp(int sp);
-
-    /**
-     * gmcpMaxSp
-     */
-    void gmcpMaxSp(int maxSp);
-
-    /**
-     * gmcpXp
-     */
-    void gmcpXp(long xp);
-
-    /**
-     * gmcpMaxXp
-     */
-    void gmcpMaxXp(long minXp, long maxXp);
-
-    /**
-     * gmcpCharStatus
-     */
-    void gmcpCharStatus(CharStatus status);
-
-    /**
-     * gmcpCharStats
-     */
-    void gmcpCharStats(EnumMap<Stat, Integer> stats);
-
-    /**
-     * gmcpCharSkills
-     */
-    void gmcpCharSkills(EnumMap<Skill, Integer> skills);
-
-    /**
-     * gmcpCharLimbs
-     */
-    void gmcpCharLimbs(EnumMap<Limb, LimbStatus> limbs);
-
-    /**
-     * gmcpPartyMembers
-     */
-    void gmcpPartyMembers(Map<String, PartyMember> members);
-
-    /**
-     * gmcpPartyVitals
-     */
-    void gmcpPartyVitals(Map<String, PartyVitals> vitals);
 }

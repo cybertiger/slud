@@ -1,9 +1,9 @@
 package org.cyberiantiger.slud.net.option;
 
-import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import dagger.Lazy;
-import org.cyberiantiger.slud.model.GmcpTypeHandler;
+import org.apache.commons.io.IOUtils;
+import org.cyberiantiger.slud.model.GmcpHandler;
 import org.cyberiantiger.slud.model.GmcpTypeHandlers;
 import org.cyberiantiger.slud.net.TelnetSocketChannelHandler;
 import org.cyberiantiger.slud.util.ByteBufferInputStream;
@@ -16,22 +16,27 @@ import java.io.IOException;
 import java.io.UncheckedIOException;
 import java.nio.ByteBuffer;
 import java.nio.charset.StandardCharsets;
+import java.util.function.Consumer;
 
+import static java.nio.charset.StandardCharsets.UTF_8;
 import static org.cyberiantiger.slud.net.TelnetOption.TOPT_GMCP;
 
 public class GmcpOptionHandler extends AbstractOptionHandler {
     private static final Logger log = LoggerFactory.getLogger(GmcpOptionHandler.class);
     private final ObjectMapper mapper;
+    private final GmcpTypeHandlers typeHandlers;
 
     @Inject
-    public GmcpOptionHandler(Lazy<TelnetSocketChannelHandler> handler, ObjectMapper mapper) {
+    public GmcpOptionHandler(Lazy<TelnetSocketChannelHandler> handler,
+                             ObjectMapper mapper,
+                             GmcpTypeHandlers typeHandlers) {
         super(handler, TOPT_GMCP, true, true, true, true);
         this.mapper = mapper;
+        this.typeHandlers = typeHandlers;
     }
 
     @Override
     public void handleSuboption(ByteBuffer data) {
-        ByteBuffer dataCopy = data.slice();
         ByteArrayOutputStream buffer = new ByteArrayOutputStream(40);
         data.mark();
         while (data.hasRemaining()) {
@@ -43,26 +48,26 @@ public class GmcpOptionHandler extends AbstractOptionHandler {
         }
         byte[] gmcpTypeData = buffer.toByteArray();
         String gmcpType = new String(gmcpTypeData, 0, gmcpTypeData.length);
-        GmcpTypeHandler<?> handler = GmcpTypeHandlers.INSTANCE.getGmcpTypeHandler(gmcpType);
+        ByteBuffer dataCopy = data.slice();
+
         try {
-            if (handler != null) {
-                getHandler().addUiAction(
-                        handler.getHandler(
-                                mapper.readValue(new ByteBufferInputStream(data), handler.getJavaType())));
-                // log.info("Successfully parsed GMCP data: {}", toString(dataCopy));
+            Consumer<GmcpHandler> action = typeHandlers.handle(gmcpType, new ByteBufferInputStream(data));
+            if (action == null) {
+                log.warn("Unhandled GMCP message: {} {}", gmcpType,
+                        IOUtils.toString(new ByteBufferInputStream(dataCopy), UTF_8));
             } else {
-                log.info("Unhandled GCMP data: {}", toString(dataCopy));
+                getHandler().addUiAction(action);
             }
         } catch (IOException ex) {
-            log.error("Error parsing GMCP data for {}", toString(dataCopy), ex);
+            try {
+                log.error("Error parsing GMCP data for {} {}",
+                        gmcpType,
+                        IOUtils.toString(new ByteBufferInputStream(dataCopy), UTF_8),
+                        ex);
+            } catch (IOException ex2) {
+                throw new UncheckedIOException(ex2);
+            }
         }
-    }
-
-    private static String toString(ByteBuffer data) {
-        byte[] stringSource = new byte[data.remaining()];
-        int i =0;
-        data.get(stringSource, 0, stringSource.length);
-        return new String(stringSource, StandardCharsets.UTF_8);
     }
 
     @Override
@@ -77,7 +82,7 @@ public class GmcpOptionHandler extends AbstractOptionHandler {
 
     public void sendGmcp(String type, Object data) {
         try (ByteArrayOutputStream out = new ByteArrayOutputStream()) {
-            out.write(type.getBytes(StandardCharsets.UTF_8));
+            out.write(type.getBytes(UTF_8));
             out.write(0x20); // Space.
             mapper.writeValue(out, data);
             sendSuboption(ByteBuffer.wrap(out.toByteArray()));

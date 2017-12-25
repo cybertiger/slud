@@ -20,7 +20,7 @@ public class TelnetSocketChannelHandler extends SocketChannelHandler {
     private static final int BUFFER_SIZE = 0x100000;
     private final TelnetCodec telnetCodec;
     private final Slud main;
-    private final List<Consumer<Ui>> actions = new ArrayList<>();
+    private final List<Consumer<? super Ui>> actions = new ArrayList<>();
 
     @Inject
     public TelnetSocketChannelHandler(SocketChannel channel, TelnetCodec telnetCodec, Slud main) {
@@ -61,7 +61,7 @@ public class TelnetSocketChannelHandler extends SocketChannelHandler {
         main.runInUi(ui -> ui.setConnectionStatus(DISCONNECTED));
     }
 
-    public void addUiAction(Consumer<Ui> action) {
+    public void addUiAction(Consumer<? super Ui> action) {
         actions.add(action);
     }
 }

@@ -97,7 +97,7 @@ public class BackendImpl extends Thread implements Backend {
                     boolean keepOpen = true;
                     try {
                         if ((ops & interestOps & OP_ACCEPT) != 0) {
-                            keepOpen &= handler.handleAccept();
+                            keepOpen = handler.handleAccept();
                         }
                         if ((ops & interestOps & OP_CONNECT) != 0) {
                             keepOpen &= handler.handleConnect();
@@ -109,6 +109,7 @@ public class BackendImpl extends Thread implements Backend {
                             keepOpen &= handler.handleWrite();
                         }
                     } catch (IOException | RuntimeException ex) {
+                        log.error("Exception handling socket read or write", ex);
                         keepOpen = false;
                     }
                     try {

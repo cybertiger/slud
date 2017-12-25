@@ -5,14 +5,15 @@ import com.googlecode.lanterna.TextColor;
 import com.googlecode.lanterna.terminal.swing.ScrollingSwingTerminal;
 import org.cyberiantiger.slud.model.*;
 import org.cyberiantiger.slud.ui.model.Avatar;
+import org.cyberiantiger.slud.ui.model.LimbData;
+import org.cyberiantiger.slud.ui.model.PartyMemberStatus;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import javax.inject.Inject;
 import javax.inject.Singleton;
-import java.util.EnumMap;
-import java.util.Map;
-import java.util.Optional;
+import javax.swing.*;
+import java.util.*;
 
 /**
  * Gather Ui components, and in the darkness bind them.
@@ -140,6 +141,7 @@ public class UiImpl implements Ui {
     @Override
     public void flush() {
         output.flush();
+        avatar.flushChanges();
     }
 
     @Override
@@ -155,7 +157,9 @@ public class UiImpl implements Ui {
             }
             output.putCharacter('\r');
             output.putCharacter('\n');
+            output.flush();
         }
+        DefaultBoundedRangeModel test;
     }
 
     @Override
@@ -163,129 +167,126 @@ public class UiImpl implements Ui {
         ui.setConnectionStatus(status);
     }
 
+    // TODO: consider replacing all this bullshit with a proxy...
+
+
     @Override
-    public void gmcpQuit() {
-        avatar.quit();
+    public void handleGmcpCharReset(int arg) {
+        avatar.handleGmcpCharReset(arg);
     }
 
     @Override
-    public void gmcpReset() {
-        avatar.reset();
+    public void handleGmcpCharQuit(int arg) {
+        avatar.handleGmcpCharQuit(arg);
     }
 
     @Override
-    public void gmcpHp(int hp) {
-        avatar.getHp().setValue(hp);
+    public void handleGmcpCharVitalsHp(int hp) {
+        avatar.handleGmcpCharVitalsHp(hp);
     }
 
     @Override
-    public void gmcpMaxHp(int maxHp) {
-        avatar.getHp().setMax(maxHp);
+    public void handleGmcpCharVitalsMaxHp(int maxhp) {
+        avatar.handleGmcpCharVitalsMaxHp(maxhp);
     }
 
     @Override
-    public void gmcpMp(int mp) {
-        avatar.getMp().setValue(mp);
+    public void handleGmcpCharVitalsMp(int mp) {
+        avatar.handleGmcpCharVitalsMp(mp);
     }
 
     @Override
-    public void gmcpMaxMp(int maxMp) {
-        avatar.getMp().setMax(maxMp);
+    public void handleGmcpCharVitalsMaxMp(int maxmp) {
+        avatar.handleGmcpCharVitalsMaxMp(maxmp);
     }
 
     @Override
-    public void gmcpSp(int sp) {
-        avatar.getSp().setValue(sp);
+    public void handleGmcpCharVitalsSp(int sp) {
+        avatar.handleGmcpCharVitalsSp(sp);
     }
 
     @Override
-    public void gmcpMaxSp(int maxSp) {
-        avatar.getSp().setMax(maxSp);
+    public void handleGmcpCharVitalsMaxSp(int maxsp) {
+        avatar.handleGmcpCharVitalsMaxSp(maxsp);
     }
 
     @Override
-    public void gmcpXp(long xp) {
-        avatar.getXp().setValue(xp);
+    public void handleGmcpCharVitalsXp(long xp) {
+        avatar.handleGmcpCharVitalsXp(xp);
     }
 
     @Override
-    public void gmcpMaxXp(long minXp, long maxXp) {
-        avatar.getXp().setMinMax(minXp, maxXp);
+    public void handleGmcpCharVitalsMinXp(long minxp) {
+        avatar.handleGmcpCharVitalsMinXp(minxp);
     }
 
     @Override
-    public void gmcpCharStatus(CharStatus status) {
-        // Manually merge data with Avatar.
-        Optional.ofNullable(status.getName()).ifPresent(avatar::setName);
-        Optional.ofNullable(status.getFullname()).ifPresent(avatar::setFullname);
-        Optional.ofNullable(status.getGender()).ifPresent(avatar::setGender);
-        Optional.ofNullable(status.getRace()).ifPresent(avatar::setRace);
-        Optional.ofNullable(status.getCharacterClass()).ifPresent(avatar::setCharacterClass);
-        Optional.ofNullable(status.getLevel()).ifPresent(avatar::setLevel);
-        log.info("avatar:\n{}", avatar);
+    public void handleGmcpCharVitalsMaxXp(long maxxp) {
+        avatar.handleGmcpCharVitalsMaxXp(maxxp);
     }
 
     @Override
-    public void gmcpCharStats(EnumMap<Stat, Integer> stats) {
-        avatar.getStats().putAll(stats);
-        log.info("avatar:\n{}", avatar);
+    public void handleGmcpCharStatus(CharStatus status) {
+        avatar.handleGmcpCharStatus(status);
     }
 
     @Override
-    public void gmcpCharSkills(EnumMap<Skill, Integer> skills) {
-        avatar.getSkills().putAll(skills);
-        log.info("avatar:\n{}", avatar);
+    public void handleGmcpCharStats(Map<Stat, Integer> stats) {
+        avatar.handleGmcpCharStats(stats);
     }
 
     @Override
-    public void gmcpCharLimbs(EnumMap<Limb, LimbStatus> limbs) {
-        limbs.forEach((limb, status) -> {
-            if (status == null) {
-                avatar.getLimbs().remove(limb);
-            } else {
-                Avatar.LimbData data = avatar.getLimbs().get(limb);
-                if (data == null) {
-                    data = new Avatar.LimbData();
-                    avatar.getLimbs().put(limb, data);
-                }
-                data.setHp(status.getHp());
-                Optional.ofNullable(status.getMaxhp()).ifPresent(data::setMaxhp);
-                Optional.ofNullable(status.getBandaged()).ifPresent(data::setBandaged);
-                Optional.ofNullable(status.getBroken()).ifPresent(data::setBroken);
-                Optional.ofNullable(status.getSevered()).ifPresent(data::setSevered);
-            }
-        });
-        log.info("avatar:\n{}", avatar);
+    public void handleGmcpCharSkills(Map<Skill, Integer> skills) {
+        avatar.handleGmcpCharSkills(skills);
     }
 
     @Override
-    public void gmcpPartyMembers(Map<String, PartyMember> members) {
-        Map<String, Avatar.PartyMemberStatus> partyMembers = avatar.getParty().getMembers();
-        partyMembers.keySet().retainAll(members.keySet()); // Remove stale entries.
-        members.forEach((k, v) -> {
-            Avatar.PartyMemberStatus status = partyMembers.get(k);
-            if (status == null) {
-                status = new Avatar.PartyMemberStatus();
-                partyMembers.put(k, status);
-            }
-            status.setMember(v);
-        });
-        log.info("avatar:\n{}", avatar);
+    public void handleGmcpCharLimbs(Map<Limb, LimbStatus> limbs) {
+        avatar.handleGmcpCharLimbs(limbs);
     }
 
     @Override
-    public void gmcpPartyVitals(Map<String, PartyVitals> vitals) {
-        Map<String, Avatar.PartyMemberStatus> partyMembers = avatar.getParty().getMembers();
-        vitals.forEach((k, v) -> {
-            Avatar.PartyMemberStatus status = partyMembers.get(k);
-            if (status != null) {
-                Optional.ofNullable(v.getHp()).ifPresent(status::setHp);
-                Optional.ofNullable(v.getMp()).ifPresent(status::setMp);
-                Optional.ofNullable(v.getSp()).ifPresent(status::setSp);
-            } else {
-                log.warn("Ignoring party vitals (not in party): {} {}", k, v);
-            }
-        });
-        log.info("avatar:\n{}", avatar);
+    public void handleGmcpCharItems(Map<String, Item> items) {
+        avatar.handleGmcpCharItems(items);
+    }
+
+    @Override
+    public void handleGmcpCharItemsBag(Map<String, Map<String, Item>> bagItems) {
+        avatar.handleGmcpCharItemsBag(bagItems);
+    }
+
+    @Override
+    public void handleGmcpCharWorn(Map<String, Set<Limb>> worn) {
+        avatar.handleGmcpCharWorn(worn);
+    }
+
+    @Override
+    public void handleGmcpCharWielded(Map<String, Set<Limb>> wielded) {
+        avatar.handleGmcpCharWielded(wielded);
+    }
+
+    @Override
+    public void handleGmcpCharHunt(List<String> hunters) {
+        avatar.handleGmcpCharHunt(hunters);
+    }
+
+    @Override
+    public void handleGmcpCharAttackersAttack(List<String> attackers) {
+        avatar.handleGmcpCharAttackersAttack(attackers);
+    }
+
+    @Override
+    public void handleGmcpCharTargetVitals(TargetVitals vitals) {
+        avatar.handleGmcpCharTargetVitals(vitals);
+    }
+
+    @Override
+    public void handleGmcpRoomItems(Map<String, Item> items) {
+        avatar.handleGmcpRoomItems(items);
+    }
+
+    @Override
+    public void handleGmcpRoomItemsAll(List<Map<String, Item>> items) {
+        avatar.handleGmcpRoomItemsAll(items);
     }
 }
