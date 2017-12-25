@@ -1,8 +1,6 @@
 package org.cyberiantiger.slud.model;
 
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
+import java.util.*;
 
 public interface GmcpHandler {
     @GmcpMessage("Char.Reset")
@@ -42,13 +40,13 @@ public interface GmcpHandler {
     void handleGmcpCharStatus(CharStatus status);
 
     @GmcpMessage("Char.Stats")
-    void handleGmcpCharStats(Map<Stat, Integer> stats);
+    void handleGmcpCharStats(EnumMap<Stat, Integer> stats);
 
     @GmcpMessage("Char.Skills")
-    void handleGmcpCharSkills(Map<Skill, Integer> skills);
+    void handleGmcpCharSkills(EnumMap<Skill, Integer> skills);
 
     @GmcpMessage("Char.Limbs")
-    void handleGmcpCharLimbs(Map<Limb, LimbStatus> limbs);
+    void handleGmcpCharLimbs(EnumMap<Limb, LimbStatus> limbs);
 
     @GmcpMessage("Char.Items")
     void handleGmcpCharItems(Map<String, Item> items);
@@ -57,10 +55,10 @@ public interface GmcpHandler {
     void handleGmcpCharItemsBag(Map<String, Map<String, Item>> bagItems);
 
     @GmcpMessage("Char.Worn")
-    void handleGmcpCharWorn(Map<String, Set<Limb>> worn);
+    void handleGmcpCharWorn(Map<String, EnumSet<Limb>> worn);
 
     @GmcpMessage("Char.Wielded")
-    void handleGmcpCharWielded(Map<String, Set<Limb>> worn);
+    void handleGmcpCharWielded(Map<String, EnumSet<Limb>> worn);
 
     @GmcpMessage("Char.Hunt")
     void handleGmcpCharHunt(List<String> hunters);

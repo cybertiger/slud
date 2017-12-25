@@ -115,13 +115,13 @@ public final class Avatar extends AbstractChangable<Void, Avatar> implements Gmc
     public void handleGmcpCharStatus(CharStatus status) {
     }
 
-    public void handleGmcpCharStats(Map<Stat, Integer> stats) {
+    public void handleGmcpCharStats(EnumMap<Stat, Integer> stats) {
     }
 
-    public void handleGmcpCharSkills(Map<Skill, Integer> skills) {
+    public void handleGmcpCharSkills(EnumMap<Skill, Integer> skills) {
     }
 
-    public void handleGmcpCharLimbs(Map<Limb, LimbStatus> limbs) {
+    public void handleGmcpCharLimbs(EnumMap<Limb, LimbStatus> limbs) {
     }
 
     public void handleGmcpCharItems(Map<String, Item> items) {
@@ -130,10 +130,10 @@ public final class Avatar extends AbstractChangable<Void, Avatar> implements Gmc
     public void handleGmcpCharItemsBag(Map<String, Map<String, Item>> bagItems) {
     }
 
-    public void handleGmcpCharWorn(Map<String, Set<Limb>> worn) {
+    public void handleGmcpCharWorn(Map<String, EnumSet<Limb>> worn) {
     }
 
-    public void handleGmcpCharWielded(Map<String, Set<Limb>> worn) {
+    public void handleGmcpCharWielded(Map<String, EnumSet<Limb>> worn) {
     }
 
     public void handleGmcpCharHunt(List<String> hunters) {

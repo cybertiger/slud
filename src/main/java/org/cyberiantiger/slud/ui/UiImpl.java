@@ -5,15 +5,16 @@ import com.googlecode.lanterna.TextColor;
 import com.googlecode.lanterna.terminal.swing.ScrollingSwingTerminal;
 import org.cyberiantiger.slud.model.*;
 import org.cyberiantiger.slud.ui.model.Avatar;
-import org.cyberiantiger.slud.ui.model.LimbData;
-import org.cyberiantiger.slud.ui.model.PartyMemberStatus;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import javax.inject.Inject;
 import javax.inject.Singleton;
 import javax.swing.*;
-import java.util.*;
+import java.util.EnumMap;
+import java.util.EnumSet;
+import java.util.List;
+import java.util.Map;
 
 /**
  * Gather Ui components, and in the darkness bind them.
@@ -231,17 +232,17 @@ public class UiImpl implements Ui {
     }
 
     @Override
-    public void handleGmcpCharStats(Map<Stat, Integer> stats) {
+    public void handleGmcpCharStats(EnumMap<Stat, Integer> stats) {
         avatar.handleGmcpCharStats(stats);
     }
 
     @Override
-    public void handleGmcpCharSkills(Map<Skill, Integer> skills) {
+    public void handleGmcpCharSkills(EnumMap<Skill, Integer> skills) {
         avatar.handleGmcpCharSkills(skills);
     }
 
     @Override
-    public void handleGmcpCharLimbs(Map<Limb, LimbStatus> limbs) {
+    public void handleGmcpCharLimbs(EnumMap<Limb, LimbStatus> limbs) {
         avatar.handleGmcpCharLimbs(limbs);
     }
 
@@ -256,12 +257,12 @@ public class UiImpl implements Ui {
     }
 
     @Override
-    public void handleGmcpCharWorn(Map<String, Set<Limb>> worn) {
+    public void handleGmcpCharWorn(Map<String, EnumSet<Limb>> worn) {
         avatar.handleGmcpCharWorn(worn);
     }
 
     @Override
-    public void handleGmcpCharWielded(Map<String, Set<Limb>> wielded) {
+    public void handleGmcpCharWielded(Map<String, EnumSet<Limb>> wielded) {
         avatar.handleGmcpCharWielded(wielded);
     }
 
