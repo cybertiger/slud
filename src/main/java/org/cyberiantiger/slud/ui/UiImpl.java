@@ -18,6 +18,8 @@ import java.util.Map;
 
 /**
  * Gather Ui components, and in the darkness bind them.
+ *
+ * TODO: Abuse a proxy to delegate calls to the correct handler implementation.
  */
 @Singleton
 public class UiImpl implements Ui {
@@ -167,9 +169,6 @@ public class UiImpl implements Ui {
     public void setConnectionStatus(ConnectionStatus status) {
         ui.setConnectionStatus(status);
     }
-
-    // TODO: consider replacing all this bullshit with a proxy...
-
 
     @Override
     public void handleGmcpCharReset(int arg) {
