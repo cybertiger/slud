@@ -3,8 +3,9 @@ package org.cyberiantiger.slud.ui;
 import lombok.Getter;
 
 import javax.swing.*;
+import java.util.function.Supplier;
 
-public enum IconType {
+public enum IconType implements Supplier<ImageIcon> {
     CONNECTED("connected.png"),
     CONNECTING("connecting.gif"), // Animated.
     DISCONNECTED("disconnected.png"),
@@ -14,12 +15,14 @@ public enum IconType {
 
     @Getter
     private String resource;
+    private ImageIcon icon;
 
     IconType(String resource) {
         this.resource = resource;
+        this.icon = new ImageIcon(IconType.class.getResource(resource));
     }
 
-    public ImageIcon load() {
-        return new ImageIcon(SludUi.class.getResource(resource));
+    public ImageIcon get() {
+        return icon;
     }
 }

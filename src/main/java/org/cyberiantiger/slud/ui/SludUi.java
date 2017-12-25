@@ -10,6 +10,9 @@ import lombok.Getter;
 import org.cyberiantiger.slud.Slud;
 import org.cyberiantiger.slud.ui.component.SkinnableGauge;
 import org.cyberiantiger.slud.ui.model.Avatar;
+import org.cyberiantiger.slud.ui.model.AvatarExperience;
+import org.cyberiantiger.slud.ui.model.AvatarVital;
+import org.cyberiantiger.slud.ui.model.ChangeListener;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -18,8 +21,6 @@ import javax.inject.Singleton;
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.ActionEvent;
-import java.util.EnumMap;
-import java.util.Map;
 
 import static javax.swing.WindowConstants.EXIT_ON_CLOSE;
 
@@ -29,7 +30,7 @@ public class SludUi {
     private final Lazy<Ui> ui;
     private final Slud main;
     private final Avatar avatar;
-    private final Map<IconType, ImageIcon> icons = new EnumMap<>(IconType.class);
+    private final ImageCache cache;
     private Ui.ConnectionStatus status;
     JFrame mainFrame;
     JTextField inputField;
@@ -49,10 +50,11 @@ public class SludUi {
     SkinnableGauge xpBar;
 
     @Inject
-    public SludUi(Slud main, Lazy<Ui> ui, Avatar avatar) {
+    public SludUi(Slud main, Lazy<Ui> ui, Avatar avatar, ImageCache cache) {
         this.main = main;
         this.ui = ui;
         this.avatar = avatar;
+        this.cache = cache;
         TerminalEmulatorDeviceConfiguration termConfig =
                 new TerminalEmulatorDeviceConfiguration(
                         50000, // Scrollback buffer
@@ -64,24 +66,19 @@ public class SludUi {
         SwingTerminalFontConfiguration fontConfig = SwingTerminalFontConfiguration.getDefault();
         TerminalEmulatorColorConfiguration colorConfig = TerminalEmulatorColorConfiguration.getDefault();
         outputField = new ScrollingSwingTerminal(termConfig, fontConfig, colorConfig);
-        loadIcons();
         initComponents();
         setConnectionStatus(Ui.ConnectionStatus.DISCONNECTED);
         mainFrame.setVisible(true);
         gaugeDialog.setVisible(true);
     }
 
-    private void loadIcons() {
-        for (IconType type : IconType.values()) {
-            icons.put(type, type.load());
-        }
-    }
 
     private SkinnableGauge createGauge(Color gaugeColor, Color changeColor) {
         SkinnableGauge result = new SkinnableGauge(
-                icons.get(IconType.GAUGE_BASE),
-                icons.get(IconType.GAUGE_GAUGE),
-                icons.get(IconType.GAUGE_OVERLAY),
+                cache,
+                IconType.GAUGE_BASE,
+                IconType.GAUGE_GAUGE,
+                IconType.GAUGE_OVERLAY,
                 gaugeColor,
                 changeColor,
                 8, 248, true);
@@ -138,6 +135,10 @@ public class SludUi {
         gaugeDialog.getRootPane().add(spBar, getGridBagConstraints(0, 2));
         gaugeDialog.getRootPane().add(xpBar, getGridBagConstraints(0, 3));
         gaugeDialog.pack();
+        avatar.getHp().addChangeListener(new VitalUpdater("HP", hpBar));
+        avatar.getMp().addChangeListener(new VitalUpdater("MP", mpBar));
+        avatar.getSp().addChangeListener(new VitalUpdater("SP", spBar));
+        avatar.getXp().addChangeListener(new ExperienceUpdater(xpBar));
     }
 
     private GridBagConstraints getGridBagConstraints(int x, int y) {
@@ -149,11 +150,76 @@ public class SludUi {
 
     public void setConnectionStatus(Ui.ConnectionStatus status) {
         this.status = status;
-        connectButton.setIcon(icons.get(status.getIconType()));
+        connectButton.setIcon(status.getIconType().get());
     }
 
     private void onConnectClick(ActionEvent event) {
         Ui.ConnectionStatus status = this.status;
         main.runInNetwork(status::action);
+    }
+
+    private static class VitalUpdater implements ChangeListener<AvatarVital> {
+        private final String name;
+        private final SkinnableGauge gauge;
+
+        public VitalUpdater(String name, SkinnableGauge gauge) {
+            this.name = name;
+            this.gauge = gauge;
+        }
+
+        @Override
+        public void stateChanged(AvatarVital state) {
+            int value = state.getValue();
+            int max = state.getMax();
+            if (max <= 0) {
+                gauge.setValue(0);
+                gauge.setToolTipText(null);
+            } else {
+                if (value < 0) {
+                    value = 0;
+                } else if (value >= max) {
+                    value = max;
+                }
+                gauge.setValue(1f * value / max);
+                gauge.setToolTipText(String.format("%s: %d / %d", name, value, max));
+            }
+        }
+    }
+
+    private static class ExperienceUpdater implements ChangeListener<AvatarExperience> {
+        private SkinnableGauge gauge;
+
+        public ExperienceUpdater(SkinnableGauge gauge) {
+            this.gauge = gauge;
+        }
+
+        @Override
+        public void stateChanged(AvatarExperience state) {
+            long value = state.getValue();
+            long min = state.getMin();
+            long max = state.getMax();
+            // Missing state information, give up and show nothing.
+            if (max <= 0 || min >= max) {
+                gauge.setValue(0);
+                gauge.setToolTipText(null);
+                return;
+            }
+            long clippedValue = value > max ? max : value;
+            float gaugePercent = (clippedValue - min) / (max - min);
+            log.info("setting xp gauge to " + gaugePercent);
+            gauge.setValue(gaugePercent);
+            StringBuilder tooltip =
+                    new StringBuilder("<html> XP: ").append(value);
+            if (min > 0) {
+                float minBuffer = 1f - ((float) min / value);
+                tooltip.append(String.format("<br>Current XP buffer: %.2f%%", minBuffer * 100));
+            }
+            if (value > max) {
+                float nextBuffer = 1f - ((float) max / value);
+                tooltip.append(String.format("<br>Next level XP buffer: %.2f%%", nextBuffer * 100));
+            }
+            tooltip.append("</html>");
+            gauge.setToolTipText(tooltip.toString());
+        }
     }
 }

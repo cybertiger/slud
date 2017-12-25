@@ -64,6 +64,7 @@ public final class Avatar extends AbstractChangable<Void, Avatar> implements Gmc
         this.limbs = limbs;
         this.party = party;
         children = Arrays.asList(hp, mp, sp, xp, avatarClass, stats, skills, limbs, party);
+        reset();
     }
 
     public void reset() {
@@ -86,33 +87,49 @@ public final class Avatar extends AbstractChangable<Void, Avatar> implements Gmc
     }
 
     public void handleGmcpCharVitalsHp(int hp) {
+        this.hp.setValue(hp);
     }
 
     public void handleGmcpCharVitalsMaxHp(int maxhp) {
+        this.hp.setMax(maxhp);
     }
 
     public void handleGmcpCharVitalsMp(int mp) {
+        this.mp.setValue(mp);
     }
 
     public void handleGmcpCharVitalsMaxMp(int maxmp) {
+        this.mp.setMax(maxmp);
     }
 
     public void handleGmcpCharVitalsSp(int sp) {
+        this.sp.setValue(sp);
     }
 
     public void handleGmcpCharVitalsMaxSp(int maxsp) {
+        this.sp.setMax(maxsp);
     }
 
     public void handleGmcpCharVitalsXp(long xp) {
+        this.xp.setValue(xp);
     }
 
     public void handleGmcpCharVitalsMinXp(long minxp) {
+        this.xp.setMin(minxp);
     }
 
     public void handleGmcpCharVitalsMaxXp(long maxxp) {
+        this.xp.setMax(maxxp);
     }
 
     public void handleGmcpCharStatus(CharStatus status) {
+        this.name = status.getName();
+        this.fullname = status.getFullname();
+        this.gender = status.getGender();
+        this.race = status.getRace();
+        this.level = status.getLevel();
+        setChanged();
+        // TODO: Guild.
     }
 
     public void handleGmcpCharStats(EnumMap<Stat, Integer> stats) {
