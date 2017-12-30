@@ -86,42 +86,52 @@ public final class Avatar extends AbstractChangable<Void, Avatar> implements Gmc
         reset();
     }
 
+    @Override
     public void handleGmcpCharVitalsHp(int hp) {
         this.hp.setValue(hp);
     }
 
+    @Override
     public void handleGmcpCharVitalsMaxHp(int maxhp) {
         this.hp.setMax(maxhp);
     }
 
+    @Override
     public void handleGmcpCharVitalsMp(int mp) {
         this.mp.setValue(mp);
     }
 
+    @Override
     public void handleGmcpCharVitalsMaxMp(int maxmp) {
         this.mp.setMax(maxmp);
     }
 
+    @Override
     public void handleGmcpCharVitalsSp(int sp) {
         this.sp.setValue(sp);
     }
 
+    @Override
     public void handleGmcpCharVitalsMaxSp(int maxsp) {
         this.sp.setMax(maxsp);
     }
 
+    @Override
     public void handleGmcpCharVitalsXp(long xp) {
         this.xp.setValue(xp);
     }
 
+    @Override
     public void handleGmcpCharVitalsMinXp(long minxp) {
         this.xp.setMin(minxp);
     }
 
+    @Override
     public void handleGmcpCharVitalsMaxXp(long maxxp) {
         this.xp.setMax(maxxp);
     }
 
+    @Override
     public void handleGmcpCharStatus(CharStatus status) {
         this.name = status.getName();
         this.fullname = status.getFullname();
@@ -132,39 +142,63 @@ public final class Avatar extends AbstractChangable<Void, Avatar> implements Gmc
         // TODO: Guild.
     }
 
+    @Override
     public void handleGmcpCharStats(EnumMap<Stat, Integer> stats) {
     }
 
+    @Override
     public void handleGmcpCharSkills(EnumMap<Skill, Integer> skills) {
     }
 
+    @Override
     public void handleGmcpCharLimbs(EnumMap<Limb, LimbStatus> limbs) {
     }
 
+    @Override
     public void handleGmcpCharItems(Map<String, Item> items) {
     }
 
+    @Override
     public void handleGmcpCharItemsBag(Map<String, Map<String, Item>> bagItems) {
     }
 
+    @Override
     public void handleGmcpCharWorn(Map<String, EnumSet<Limb>> worn) {
     }
 
+    @Override
     public void handleGmcpCharWielded(Map<String, EnumSet<Limb>> worn) {
     }
 
+    @Override
     public void handleGmcpCharHunt(List<String> hunters) {
     }
 
+    @Override
     public void handleGmcpCharAttackersAttack(List<String> attackers) {
     }
 
+    @Override
     public void handleGmcpCharTargetVitals(TargetVitals vitals) {
     }
 
+    @Override
     public void handleGmcpRoomItems(Map<String, Item> items) {
     }
 
+    @Override
     public void handleGmcpRoomItemsAll(List<Map<String, Item>> items) {
+    }
+
+    @Override
+    public void handleGmcpPartyMembers(Map<String, PartyMember> party) {
+        // delegate to party.
+        this.party.handleGmcpPartyMembers(party);
+    }
+
+    @Override
+    public void handleGmcpPartyVitals(Map<String, PartyVitals> party) {
+        // delegate to party.
+        this.party.handleGmcpPartyVitals(party);
     }
 }

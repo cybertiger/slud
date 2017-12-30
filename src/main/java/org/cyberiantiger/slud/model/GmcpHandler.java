@@ -74,4 +74,10 @@ public interface GmcpHandler {
 
     @GmcpMessage("Room.Items.All")
     void handleGmcpRoomItemsAll(List<Map<String, Item>> items);
+
+    @GmcpMessage("Party.Members")
+    void handleGmcpPartyMembers(Map<String, PartyMember> party);
+
+    @GmcpMessage("Party.Vitals")
+    void handleGmcpPartyVitals(Map<String, PartyVitals> party);
 }

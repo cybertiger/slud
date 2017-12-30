@@ -33,7 +33,20 @@ public enum Race {
     @JsonProperty("halfling")
     HALFLING("Halfling"),
     @JsonProperty("artrell")
-    ARTRELL("Artrell");
+    ARTRELL("Artrell"),
+    @JsonProperty("hawk")
+    HAWK("Hawk"),
+    @JsonProperty("bear")
+    BEAR("Bear"),
+    @JsonProperty("wolf")
+    WOLF("Wolf"),
+    @JsonProperty("dolphin")
+    DOLPHIN("Dolphin"),
+    @JsonProperty("dire wolf")
+    DIRE_WOLF("Dire Wolf"),
+    @JsonProperty("grizzly bear")
+    GRIZZLY_BEAR("Grizzly Bear");
+
 
     @Getter
     private final String displayName;

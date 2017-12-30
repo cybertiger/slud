@@ -289,4 +289,14 @@ public class UiImpl implements Ui {
     public void handleGmcpRoomItemsAll(List<Map<String, Item>> items) {
         avatar.handleGmcpRoomItemsAll(items);
     }
+
+    @Override
+    public void handleGmcpPartyMembers(Map<String, PartyMember> party) {
+        avatar.handleGmcpPartyMembers(party);
+    }
+
+    @Override
+    public void handleGmcpPartyVitals(Map<String, PartyVitals> party) {
+        avatar.handleGmcpPartyVitals(party);
+    }
 }

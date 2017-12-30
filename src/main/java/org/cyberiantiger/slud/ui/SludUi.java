@@ -128,8 +128,8 @@ public class SludUi {
         gaugeDialog.setBackground(Color.BLACK);
         hpBar = createGauge(Color.RED, Color.RED.darker().darker());
         mpBar = createGauge(Color.BLUE, Color.BLUE.darker().darker());
-        spBar = createGauge(Color.YELLOW.darker(), Color.YELLOW.darker().darker().darker());
-        xpBar = createGauge(Color.WHITE.darker().darker(), Color.WHITE.darker().darker().darker().darker());
+        spBar = createGauge(Color.YELLOW, Color.YELLOW.darker().darker());
+        xpBar = createGauge(Color.WHITE, Color.WHITE.darker().darker());
         gaugeDialog.getRootPane().add(hpBar, getGridBagConstraints(0, 0));
         gaugeDialog.getRootPane().add(mpBar, getGridBagConstraints(0, 1));
         gaugeDialog.getRootPane().add(spBar, getGridBagConstraints(0, 2));

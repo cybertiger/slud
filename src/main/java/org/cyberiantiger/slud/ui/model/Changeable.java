@@ -1,5 +1,6 @@
 package org.cyberiantiger.slud.ui.model;
 
+import java.util.Collection;
 import java.util.List;
 
 public interface Changeable<U, V> {
@@ -43,6 +44,6 @@ public interface Changeable<U, V> {
      *
      * @return A list of child Changeable.
      */
-    List<Changeable<V, ?>> getChildren();
+    Collection<? extends Changeable<V, ?>> getChildren();
 
 }
