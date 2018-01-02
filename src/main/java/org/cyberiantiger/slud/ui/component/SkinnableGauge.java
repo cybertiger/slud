@@ -50,6 +50,30 @@ public class SkinnableGauge extends JComponent {
 
     private Timer swingTimer = new Timer(1000 / FPS, this::animate);
 
+    public static SkinnableGauge createNormalGauge(ImageCache cache, Color color) {
+        SkinnableGauge result = new SkinnableGauge(
+                cache,
+                IconType.GAUGE_BASE,
+                IconType.GAUGE_GAUGE,
+                IconType.GAUGE_OVERLAY,
+                color,
+                color.darker().darker(),
+                8, 248, true);
+        return result;
+    }
+
+    public static SkinnableGauge createSmallGauge(ImageCache cache, Color color) {
+        SkinnableGauge result = new SkinnableGauge(
+                cache,
+                IconType.GAUGE_BASE_SMALL,
+                IconType.GAUGE_GAUGE_SMALL,
+                IconType.GAUGE_OVERLAY_SMALL,
+                color,
+                color.darker().darker(),
+                2, 126, true);
+        return result;
+    }
+
     public SkinnableGauge(ImageCache cache,
                           IconType base,
                           IconType gauge,

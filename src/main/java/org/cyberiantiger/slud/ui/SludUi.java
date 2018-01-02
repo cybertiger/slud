@@ -8,6 +8,7 @@ import com.googlecode.lanterna.terminal.swing.TerminalEmulatorDeviceConfiguratio
 import dagger.Lazy;
 import lombok.Getter;
 import org.cyberiantiger.slud.Slud;
+import org.cyberiantiger.slud.ui.component.PartyStatusPanel;
 import org.cyberiantiger.slud.ui.component.SkinnableGauge;
 import org.cyberiantiger.slud.ui.model.Avatar;
 import org.cyberiantiger.slud.ui.model.AvatarExperience;
@@ -23,6 +24,7 @@ import java.awt.*;
 import java.awt.event.ActionEvent;
 
 import static javax.swing.WindowConstants.EXIT_ON_CLOSE;
+import static org.cyberiantiger.slud.ui.component.SkinnableGauge.createNormalGauge;
 
 @Singleton
 public class SludUi {
@@ -48,6 +50,9 @@ public class SludUi {
     SkinnableGauge spBar;
     @Getter
     SkinnableGauge xpBar;
+    @Getter
+    PartyStatusPanel partyStatusPanel;
+    JDialog partyDialog;
 
     @Inject
     public SludUi(Slud main, Lazy<Ui> ui, Avatar avatar, ImageCache cache) {
@@ -70,20 +75,7 @@ public class SludUi {
         setConnectionStatus(Ui.ConnectionStatus.DISCONNECTED);
         mainFrame.setVisible(true);
         gaugeDialog.setVisible(true);
-    }
-
-
-    private SkinnableGauge createGauge(Color gaugeColor, Color changeColor) {
-        SkinnableGauge result = new SkinnableGauge(
-                cache,
-                IconType.GAUGE_BASE,
-                IconType.GAUGE_GAUGE,
-                IconType.GAUGE_OVERLAY,
-                gaugeColor,
-                changeColor,
-                8, 248, true);
-        result.setForeground(Color.WHITE.darker());
-        return result;
+        partyDialog.setVisible(true);
     }
 
     private void initComponents() {
@@ -126,10 +118,10 @@ public class SludUi {
         gaugeDialog = new JDialog(mainFrame);
         gaugeDialog.getRootPane().setLayout(new GridBagLayout());
         gaugeDialog.setBackground(Color.BLACK);
-        hpBar = createGauge(Color.RED, Color.RED.darker().darker());
-        mpBar = createGauge(Color.BLUE, Color.BLUE.darker().darker());
-        spBar = createGauge(Color.YELLOW, Color.YELLOW.darker().darker());
-        xpBar = createGauge(Color.WHITE, Color.WHITE.darker().darker());
+        hpBar = createNormalGauge(cache, Color.RED);
+        mpBar = createNormalGauge(cache, Color.BLUE);
+        spBar = createNormalGauge(cache, Color.YELLOW);
+        xpBar = createNormalGauge(cache, Color.WHITE);
         gaugeDialog.getRootPane().add(hpBar, getGridBagConstraints(0, 0));
         gaugeDialog.getRootPane().add(mpBar, getGridBagConstraints(0, 1));
         gaugeDialog.getRootPane().add(spBar, getGridBagConstraints(0, 2));
@@ -139,6 +131,15 @@ public class SludUi {
         avatar.getMp().addChangeListener(new VitalUpdater("MP", mpBar));
         avatar.getSp().addChangeListener(new VitalUpdater("SP", spBar));
         avatar.getXp().addChangeListener(new ExperienceUpdater(xpBar));
+
+        // Party
+        partyDialog = new JDialog(mainFrame);
+        partyStatusPanel = new PartyStatusPanel(cache);
+        partyDialog.getRootPane().setLayout(new BorderLayout());
+        partyDialog.setBackground(Color.BLACK);
+        partyDialog.getRootPane().add(partyStatusPanel, BorderLayout.CENTER);
+        partyDialog.pack();
+        avatar.getParty().addChangeListener(partyStatusPanel.getPartyListener());
     }
 
     private GridBagConstraints getGridBagConstraints(int x, int y) {
