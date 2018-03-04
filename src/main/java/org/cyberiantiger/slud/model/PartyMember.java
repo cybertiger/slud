@@ -11,5 +11,7 @@ public class PartyMember {
     Gender gender;
     @JsonProperty("class")
     List<CharacterClass> characterClass;
+    boolean dead;
+    boolean netdead;
     int level;
 }

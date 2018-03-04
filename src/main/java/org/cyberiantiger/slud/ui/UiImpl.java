@@ -299,4 +299,24 @@ public class UiImpl implements Ui {
     public void handleGmcpPartyVitals(Map<String, PartyVitals> party) {
         avatar.handleGmcpPartyVitals(party);
     }
+
+    @Override
+    public void handleRoomId(Long roomId) {
+        avatar.handleRoomId(roomId);
+    }
+
+    @Override
+    public void handleRoomExits(Map<String, Long> exits) {
+        avatar.handleRoomExits(exits);
+    }
+
+    @Override
+    public void handleChat(ChatMessage chatMessage) {
+        avatar.handleChat(chatMessage);
+    }
+
+    @Override
+    public void handleTell(TellMessage tellMessage) {
+        avatar.handleTell(tellMessage);
+    }
 }

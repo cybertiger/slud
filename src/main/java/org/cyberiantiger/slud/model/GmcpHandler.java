@@ -80,4 +80,16 @@ public interface GmcpHandler {
 
     @GmcpMessage("Party.Vitals")
     void handleGmcpPartyVitals(Map<String, PartyVitals> party);
+
+    @GmcpMessage("Room.Id")
+    void handleRoomId(Long roomId);
+
+    @GmcpMessage("Room.Exits")
+    void handleRoomExits(Map<String, Long> exits);
+
+    @GmcpMessage("Msg.Chat")
+    void handleChat(ChatMessage chatMessage);
+
+    @GmcpMessage("Msg.Tell")
+    void handleTell(TellMessage tellMessage);
 }

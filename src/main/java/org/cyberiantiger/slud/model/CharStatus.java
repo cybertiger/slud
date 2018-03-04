@@ -12,6 +12,8 @@ public class CharStatus {
     private Race race;
     private Gender gender;
     private Integer level;
+    private boolean dead;
+    private boolean netdead;
     @JsonProperty("class")
     private List<CharacterClass> characterClass;
 }

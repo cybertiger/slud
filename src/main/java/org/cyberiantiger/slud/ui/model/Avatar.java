@@ -201,4 +201,20 @@ public final class Avatar extends AbstractChangable<Void, Avatar> implements Gmc
         // delegate to party.
         this.party.handleGmcpPartyVitals(party);
     }
+
+    @Override
+    public void handleRoomId(Long roomId) {
+    }
+
+    @Override
+    public void handleRoomExits(Map<String, Long> exits) {
+    }
+
+    @Override
+    public void handleChat(ChatMessage chatMessage) {
+    }
+
+    @Override
+    public void handleTell(TellMessage tellMessage) {
+    }
 }
