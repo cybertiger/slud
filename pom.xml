@@ -66,6 +66,12 @@
             <version>1.6.11</version>
         </dependency>
         -->
+        <!-- https://mvnrepository.com/artifact/com.h2database/h2-mvstore -->
+        <dependency>
+            <groupId>com.h2database</groupId>
+            <artifactId>h2-mvstore</artifactId>
+            <version>1.4.197</version>
+        </dependency>
         <dependency>
             <groupId>commons-io</groupId>
             <artifactId>commons-io</artifactId>

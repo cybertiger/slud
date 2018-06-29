@@ -69,6 +69,9 @@ public interface GmcpHandler {
     @GmcpMessage("Char.Target.Vitals")
     void handleGmcpCharTargetVitals(TargetVitals vitals);
 
+    @GmcpMessage("Char.Moved")
+    void handleCharMoved(String dir);
+
     @GmcpMessage("Room.Items")
     void handleGmcpRoomItems(Map<String, Item> items);
 
@@ -87,9 +90,18 @@ public interface GmcpHandler {
     @GmcpMessage("Room.Exits")
     void handleRoomExits(Map<String, Long> exits);
 
+    @GmcpMessage("Room.Realm")
+    void handleRoomRealm(String realm);
+
     @GmcpMessage("Msg.Chat")
     void handleChat(ChatMessage chatMessage);
 
     @GmcpMessage("Msg.Tell")
     void handleTell(TellMessage tellMessage);
+
+    @GmcpMessage("Char.Cooldowns")
+    void handleCharCooldowns(Map<String, Integer> charCooldowns);
+
+    @GmcpMessage("Char.Buffs")
+    void handleCharBuffs(Map<String, CharBuff> buffMap);
 }

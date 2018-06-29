@@ -1,6 +1,7 @@
 package org.cyberiantiger.slud.ui.model;
 
 import lombok.Getter;
+import lombok.extern.slf4j.Slf4j;
 import org.cyberiantiger.slud.model.*;
 import org.cyberiantiger.slud.model.GmcpHandler;
 
@@ -9,6 +10,7 @@ import javax.inject.Singleton;
 import java.util.*;
 
 @Singleton
+@Slf4j
 public final class Avatar extends AbstractChangable<Void, Avatar> implements GmcpHandler {
     // Child objects.
     @Getter
@@ -204,10 +206,12 @@ public final class Avatar extends AbstractChangable<Void, Avatar> implements Gmc
 
     @Override
     public void handleRoomId(Long roomId) {
+        log.info("Got room id: {}", roomId);
     }
 
     @Override
     public void handleRoomExits(Map<String, Long> exits) {
+        log.info("Got exits: {}", exits);
     }
 
     @Override
@@ -216,5 +220,25 @@ public final class Avatar extends AbstractChangable<Void, Avatar> implements Gmc
 
     @Override
     public void handleTell(TellMessage tellMessage) {
+    }
+
+    @Override
+    public void handleCharMoved(String dir) {
+        log.info("Moved: {}", dir);
+    }
+
+    @Override
+    public void handleRoomRealm(String realm) {
+        log.info("Realm is {}", realm);
+    }
+
+    @Override
+    public void handleCharCooldowns(Map<String, Integer> charCooldowns) {
+        log.info("Cooldowns: {}", charCooldowns);
+    }
+
+    @Override
+    public void handleCharBuffs(Map<String, CharBuff> buffMap) {
+        log.info("Buffs: {}", buffMap);
     }
 }

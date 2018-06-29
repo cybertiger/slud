@@ -319,4 +319,24 @@ public class UiImpl implements Ui {
     public void handleTell(TellMessage tellMessage) {
         avatar.handleTell(tellMessage);
     }
+
+    @Override
+    public void handleCharMoved(String dir) {
+        avatar.handleCharMoved(dir);
+    }
+
+    @Override
+    public void handleRoomRealm(String realm) {
+        avatar.handleRoomRealm(realm);
+    }
+
+    @Override
+    public void handleCharCooldowns(Map<String, Integer> charCooldowns) {
+        avatar.handleCharCooldowns(charCooldowns);
+    }
+
+    @Override
+    public void handleCharBuffs(Map<String, CharBuff> buffMap) {
+        avatar.handleCharBuffs(buffMap);
+    }
 }
